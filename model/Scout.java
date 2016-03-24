@@ -24,13 +24,13 @@ import userinterface.BookView;
 
 /** The class containing the Account for the ATM application */
 //==============================================================
-public class Book extends EntityBase implements IView
+public class Scout extends EntityBase implements IView
 {
-	private static final String myTableName = "Book";
+	private static final String myTableName = "Scout";
 
 	protected Properties dependencies;
 	protected Stage myStage;
-	protected Librarian myLibrarian;
+	protected Librarian myTLC;
 
 	// GUI Components
 
@@ -38,13 +38,13 @@ public class Book extends EntityBase implements IView
 
 	// constructor for this class
 	//----------------------------------------------------------
-	public Book(int bookId)
+	public Scout(int scoutId)
 		throws InvalidPrimaryKeyException
 	{
 		super(myTableName);
 
 		setDependencies();
-		String query = "SELECT * FROM " + myTableName + " WHERE (bookId = " + bookId + ")";
+		String query = "SELECT * FROM " + myTableName + " WHERE (bookId = " + scoutId + ")";
 
 		Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
 
@@ -56,20 +56,20 @@ public class Book extends EntityBase implements IView
 			// There should be EXACTLY one bookIds. More than that is an error
 			if (size != 1)
 			{
-				throw new InvalidPrimaryKeyException("Multiple accounts matching id : "
-					+ bookId + " found.");
+				throw new InvalidPrimaryKeyException("Multiple scouts matching id : "
+					+ scoutId + " found.");
 			}
 			else
 			{
 				// copy all the retrieved data into persistent state
-				Properties retrievedBookData = allDataRetrieved.elementAt(0);
+				Properties retrievedScoutData = allDataRetrieved.elementAt(0);
 				persistentState = new Properties();
 
-				Enumeration allKeys = retrievedBookData.propertyNames();
+				Enumeration allKeys = retrievedScoutData.propertyNames();
 				while (allKeys.hasMoreElements() == true)
 				{
 					String nextKey = (String)allKeys.nextElement();
-					String nextValue = retrievedBookData.getProperty(nextKey);
+					String nextValue = retrievedScoutData.getProperty(nextKey);
 
 					if (nextValue != null)
 					{
@@ -82,30 +82,30 @@ public class Book extends EntityBase implements IView
 		// If no Book found for this id, throw an exception
 		else
 		{
-			throw new InvalidPrimaryKeyException("No book matching id : "
-				+ bookId  + " found.");
+			throw new InvalidPrimaryKeyException("No scout matching id : "
+				+ scoutId  + " found.");
 		}
 	}
 
 	// Can also be used to create a NEW Book (if the system it is part of
 	// allows for a new book to be set up)
 	//----------------------------------------------------------
-	public Book(Properties props)
+	public Scout(Properties props)
 	{
 		super(myTableName);
 
 		setDependencies();
 		setData(props);
 	}
-	
-	public Book(Librarian l)
+
+	public Scout(TLC t)
 		{
 		super(myTableName);
 		myStage = MainStageContainer.getInstance();
-		myLibrarian = l;
-			
+		myTLC = t;
+
 		}
-	
+
 
 	//-----------------------------------------------------------------------------------
 	public void setData(Properties props)
@@ -124,11 +124,11 @@ public class Book extends EntityBase implements IView
 		}
 	}
 	//-----------------------------------------------------------------------------------
-	
+
 	private void setDependencies()
 	{
 		dependencies = new Properties();
-	
+
 		myRegistry.setDependencies(dependencies);
 	}
 
@@ -157,12 +157,12 @@ public class Book extends EntityBase implements IView
 
 
 
-	
+
 	//-----------------------------------------------------------------------------------
-	public static int compare(Book a, Book b)
+	public static int compare(Scout a, Scout b)
 	{
-		String aNum = (String)a.getState("bookId");//this or title
-		String bNum = (String)b.getState("bookId");
+		String aNum = (String)a.getState("scoutId");//this or title
+		String bNum = (String)b.getState("scoutId");
 
 		return aNum.compareTo(bNum);
 	}
@@ -173,68 +173,64 @@ public class Book extends EntityBase implements IView
 	{
 		updateStateInDatabase();
 	}
-	
+
 	//-----------------------------------------------------------------------------------
-	private void updateStateInDatabase() 
+	private void updateStateInDatabase()
 	{
 		try
 		{
-			if (persistentState.getProperty("bookId") != null)
+			if (persistentState.getProperty("scoutId") != null)
 			{
 				Properties whereClause = new Properties();
-				whereClause.setProperty("bookId",
-				persistentState.getProperty("bookId"));
+				whereClause.setProperty("scoutId",
+				persistentState.getProperty("scoutId"));
 				updatePersistentState(mySchema, persistentState, whereClause);
-				updateStatusMessage = "Book data for book number : " + persistentState.getProperty("bookId") + " updated successfully in database!";
-				System.out.println("Trying to update Book");
+				updateStatusMessage = "Scout data for scout number : " + persistentState.getProperty("scoutId") + " updated successfully in database!";
+				System.out.println("Trying to update Scout");
 			}
 			else
 			{
-				
-				Integer bookId =
+
+				Integer scoutId =
 					insertAutoIncrementalPersistentState(mySchema, persistentState);
-				persistentState.setProperty("bookId", "" + bookId.intValue());
-				System.out.println("Book data for new book installed successfully in database");
-				updateStatusMessage = "Book data for new book : " +  persistentState.getProperty("bookId")
+				persistentState.setProperty("scoutId", "" + scoutId.intValue());
+				System.out.println("Scout data for new scout installed successfully in database");
+				updateStatusMessage = "Scout data for new scout : " +  persistentState.getProperty("scoutId")
 					+ "installed successfully in database!";
 			}
-			Scene currentScene = (Scene)myViews.get("BookView");
+			Scene currentScene = (Scene)myViews.get("ScoutView");
 
 			if (currentScene != null)
 			{
-					((BookView)currentScene.getRoot()).displayMessage("Book saved successfully!");
+					((ScoutView)currentScene.getRoot()).displayMessage("Scout saved successfully!");
 			}
-			
+
 		}
 		catch (SQLException ex)
 		{
-			System.out.println("Error in installing book data in database!");
-			updateStatusMessage = "Error in installing book data in database!";
-			
-			Scene currentScene = (Scene)myViews.get("BookView");
+			System.out.println("Error in installing Scout data in database!");
+			updateStatusMessage = "Error in installing Scout data in database!";
+
+			Scene currentScene = (Scene)myViews.get("ScoutView");
 
 			if (currentScene != null)
 			{
-					((BookView)currentScene.getRoot()).displayErrorMessage("ERROR in book save!");
+					((ScoutView)currentScene.getRoot()).displayErrorMessage("ERROR in Scout save!");
 			}
 		}
-		//DEBUG System.out.println("updateStateInDatabase " + updateStatusMessage);
 	}
 
-
-	/**
-	 * This method is needed solely to enable the Book information to be displayable in a table
-	 *
-	 */
-	//--------------------------------------------------------------------------
 	public Vector<String> getEntryListView()
 	{
 		Vector<String> v = new Vector<String>();
 
-		v.addElement(persistentState.getProperty("bookId"));
-		v.addElement(persistentState.getProperty("author"));
-		v.addElement(persistentState.getProperty("title"));
-		v.addElement(persistentState.getProperty("pubYear"));
+		v.addElement(persistentState.getProperty("scoutId"));
+		v.addElement(persistentState.getProperty("firstName"));
+		v.addElement(persistentState.getProperty("middleInitial"));
+		v.addElement(persistentState.getProperty("lastName"));
+		v.addElement(persistentState.getProperty("dob"));
+		v.addElement(persistentState.getProperty("phoneNum"));
+		v.addElement(persistentState.getProperty("email"));
 		v.addElement(persistentState.getProperty("status"));
 
 		return v;
@@ -248,7 +244,7 @@ public class Book extends EntityBase implements IView
 			mySchema = getSchemaInfo(tableName);
 		}
 	}
-	
+
 	//-------------------------------------------------------------------------
 	public String toString()
 	{
@@ -256,26 +252,25 @@ public class Book extends EntityBase implements IView
 	}
 	//-------------------------------------------------------------------------
 	//NEW METHODS 2-21-16------------------------------------------------------
-	public void createAndShowBookView()
+	public void createAndShowScoutView()
 	{
-		Scene currentScene = (Scene)myViews.get("BookView");
+		Scene currentScene = (Scene)myViews.get("ScoutView");
 
 		if (currentScene == null)
 		{
 			// create our initial view
-			View newView = new BookView(this); // USE VIEW FACTORY
+			View newView = new ScoutView(this); // USE VIEW FACTORY
 			currentScene = new Scene(newView);
-			myViews.put("BookView", currentScene);
+			myViews.put("ScoutView", currentScene);
 		}
-				
+
 		swapToView(currentScene);
-		
+
 	}
-	
+
 	public void done()
 	{
-		myLibrarian.transactionDone();
-		
+		myTLC.transactionDone();
+
 	}
 }
-
