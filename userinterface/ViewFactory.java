@@ -11,15 +11,15 @@ public class ViewFactory {
 		{
 			return new TreeLotCoordinatorView(model);
 		}
-		/*else if(viewName.equals("AddScoutView") == true)
+		else if(viewName.equals("AddScoutView") == true)
 		{
 			return new AddScoutView(model);
-		}/*
-		else if(viewName.equals("ModifyScoutView") == true)
-		{
-			return new ModifyScoutView(model);
 		}
-		else if(viewName.equals("RemoveScoutView") == true)
+		else if(viewName.equals("EnterScoutView") == true)
+		{
+			return new EnterScoutView(model);
+		}
+		/*else if(viewName.equals("RemoveScoutView") == true)
 		{
 			return new RemoveScoutView(model);
 		}

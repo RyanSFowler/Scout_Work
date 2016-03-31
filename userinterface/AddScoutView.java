@@ -24,7 +24,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-
+import model.Scout;
 
 public class AddScoutView extends View {
 
@@ -38,10 +38,12 @@ public class AddScoutView extends View {
       	private TextField dobField;
       	private TextField phoneNumField;
       	private TextField emailField;
+        private Scout myScout;
 
         public AddScoutView(IModel scout)
     {
         super(scout, "AddScoutView");
+        myScout=(Scout)scout;
         // create a container for showing the contents
         VBox container = new VBox(10);
         container.setAlignment(Pos.CENTER);
@@ -97,14 +99,14 @@ public class AddScoutView extends View {
             grid.setAlignment(Pos.CENTER);
             grid.setHgap(10);
             grid.setVgap(10);
-            grid.setPadding(new Insets(25, 25, 25, 25));
+            grid.setPadding(new Insets(50, 50, 50, 50));
             firstNameField = createInput(grid, firstNameField, "First Name:", 0);
             lastNameField = createInput(grid, lastNameField, "Last Name:", 1);
             middleInitialField = createInput(grid, middleInitialField, "Middle Initial:", 2);
             dobField = createInput(grid, dobField, "Date of Birth:", 3);
             phoneNumField = createInput(grid, phoneNumField, "Phone Number:", 4);
             emailField = createInput(grid, emailField, "Email:", 5);
-            createButton(grid, submitButton, "OK", 6);
+            createButton(grid, submitButton, "Add Scout", 6);
             createButton(grid, doneButton, "CANCEL", 7);
             return grid;
 	}
@@ -122,20 +124,32 @@ public class AddScoutView extends View {
 	{
             button = new Button(nameButton);
             button.setId(Integer.toString(pos));
-            button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-                public void handle(ActionEvent e) {
-                    processAction(e);
-                }
-            });
+            if(nameButton=="CANCEL")
+            {
+              button.setOnAction(new EventHandler<ActionEvent>() {
+              @Override
+                  public void handle(ActionEvent e) {
+                      myScout.done();
+                  }
+              });
+            }
+            else
+            {
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                  public void handle(ActionEvent e) {
+                      processAction(e);
+                    }
+                });
+              }
             HBox btnContainer = new HBox(10);
             btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
             btnContainer.getChildren().add(button);
-            if (pos == 4) {
-                grid.add(btnContainer, 0, 2);
+            if (pos == 6) {
+                grid.add(btnContainer, 0, 10);
             }
             else {
-                grid.add(btnContainer, 1, 2);
+                grid.add(btnContainer, 1, 10);
             }
 	}
           public void processAction(Event evt)

@@ -31,7 +31,7 @@ public class Scout extends EntityBase implements IView, IModel {
             if (type == "Add") {
                 createAddScoutView();
             }
-            else if (type == "Update") {
+            else if (type == "Modify") {
                 createEnterScoutView();
             }
             else if (type == "Remove") {
@@ -63,14 +63,14 @@ public class Scout extends EntityBase implements IView, IModel {
             swapToView(currentScene);
         }
 
-     public void createUpdateScoutView() {
-            Scene currentScene = (Scene)myViews.get("UpdateScoutView");
+     public void createModifyScoutView() {
+            Scene currentScene = (Scene)myViews.get("ModifyScoutView");
 
             if (currentScene == null)
             {
-                View newView = ViewFactory.createView("UpdateScoutView", this);
+                View newView = ViewFactory.createView("ModifyScoutView", this);
                 currentScene = new Scene(newView);
-                myViews.put("UpdateScoutView", currentScene);
+                myViews.put("ModifyScoutView", currentScene);
             }
             swapToView(currentScene);
         }
@@ -141,6 +141,10 @@ public class Scout extends EntityBase implements IView, IModel {
 	{
             stateChangeRequest(key, value);
 	}
+  public void done()
+  {
+    myTreeLotCoordinator.transactionDone();
+  }
 
 
 

@@ -1,23 +1,20 @@
-
-//specify the package
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package userinterface;
 
-//system imports
-import java.text.NumberFormat;
-import java.util.Properties;
-
-import model.Book;
-import javafx.event.Event;
+import impresario.IModel;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -27,282 +24,160 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-
-//project imports
-import impresario.IModel;
-import model.Librarian;
-
-/** The class containing the Librarian View  for the HW2 application */
-//==============================================================
-public class BookView extends View
-{
-
-	// GUI stuff
-	private TextField authorField;
-	private TextField titleField;
-	private TextField pubYearField;
-	private ComboBox statusBox;
-
-	private Button submitButton;
-	private Button doneButton;
+import model.Scout;
 
 
-	private Book myBook;
+public class EnterScoutView extends View {
 
-	// For showing error message
-	private MessageView statusLog;
+        protected Button cancelButton;
+        protected Button submitButton;
+	      private Button doneButton;
+        protected MessageView statusLog;
+        private TextField firstNameField;
+      	private TextField lastNameField;
+        private Scout myScout;
 
-	// constructor for this class -- takes a model object
-	//----------------------------------------------------------
-	public BookView( Book book)
+        public EnterScoutView(IModel scout)
+    {
+        super(scout, "EnterScoutView");
+        myScout=(Scout)scout;
+        // create a container for showing the contents
+        VBox container = new VBox(10);
+        container.setAlignment(Pos.CENTER);
+        container.setPadding(new Insets(15, 5, 5, 5));
+
+        // create our GUI components, add them to this panel
+	container.getChildren().add(createTitle());
+	container.getChildren().add(createFormContent());
+
+	// Error message area
+	container.getChildren().add(createStatusLog("                                            "));
+	getChildren().add(container);
+        populateFields();
+        myModel.subscribe("EnterScoutViewError", this);
+    }
+
+        protected void populateFields()
 	{
-
-		super (book, "BookView");
-
-		myBook = book;
-
-		// create a container for showing the contents
-		VBox container = new VBox(10);
-
-		container.setPadding(new Insets(15, 5, 5, 5));
-
-		// create a Node (Text) for showing the title
-		container.getChildren().add(createTitle());
-
-		// create a Node (GridPane) for showing data entry fields
-		container.getChildren().add(createFormContents());
-
-		// Error message area
-		container.getChildren().add(createStatusLog("                          "));
-
-		getChildren().add(container);
-
-
-
+            firstNameField.setText("");
+            lastNameField.setText("");
 	}
 
-	// Create the label (Text) for the title of the screen
+        private MessageView createStatusLog(String initialMessage)
+	{
+            statusLog = new MessageView(initialMessage);
+            return statusLog;
+	}
+
+        // Create the title container
 	//-------------------------------------------------------------
 	private Node createTitle()
 	{
-
-		Text titleText = new Text("       LIBRARY SYSTEM          ");
-		titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-		titleText.setTextAlignment(TextAlignment.CENTER);
-		titleText.setFill(Color.DARKGREEN);
-
-
-		return titleText;
+            HBox container = new HBox();
+            container.setAlignment(Pos.CENTER);
+            Text titleText = new Text(" Search Scouts ");
+            titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            titleText.setWrappingWidth(300);
+            titleText.setTextAlignment(TextAlignment.CENTER);
+            titleText.setFill(Color.DARKGREEN);
+            container.getChildren().add(titleText);
+            return container;
 	}
 
-	// Create the main form contents
+        // Create the main form content
 	//-------------------------------------------------------------
-	private GridPane createFormContents()
-	{
-		GridPane grid = new GridPane();
-   	grid.setAlignment(Pos.CENTER);
-  		grid.setHgap(10);
-   	grid.setVgap(10);
-   	grid.setPadding(new Insets(25, 25, 25, 25));
-
-		// data entry fields
-   	//---------------------------------------------
-   	Label authorLabel = new Label("Author:");
-   	grid.add(authorLabel, 0, 0);
-
-   	authorField = new TextField();
-
-  	authorField.setOnAction(new EventHandler<ActionEvent>() {
-
-      		     @Override
-      		     public void handle(ActionEvent e) {
-      		     	//myLibrarian.createNewBook();
-
-           	     }
-       	});
-  	grid.add(authorField, 1, 0);
-
-   	//---------------------------------------------
-   	Label titleLabel = new Label("Title:");
-   	grid.add(titleLabel, 0, 1);
-
-   	titleField = new TextField();
-
-  	titleField.setOnAction(new EventHandler<ActionEvent>() {
-
-      		     @Override
-      		     public void handle(ActionEvent e) {
-      		     	//myLibrarian.createNewBook();
-
-           	     }
-       	});
-  	grid.add(titleField, 1, 1);
-   	//---------------------------------------------
-
-   	Label pubYearLabel = new Label("Publication Year:");
-   	grid.add(pubYearLabel, 0, 2);
-
-   	pubYearField = new TextField();
-
-  	pubYearField.setOnAction(new EventHandler<ActionEvent>() {
-
-      		     @Override
-      		     public void handle(ActionEvent e) {
-      		     	//myLibrarian.createNewBook();
-
-           	     }
-       	});
-  	grid.add(pubYearField, 1, 2);
-
-   	//---------------------------------------------
-  	Label statusBoxLabel = new Label("Status:");
-  	grid.add(statusBoxLabel, 0, 3);
-  	statusBox = new ComboBox();
-  	statusBox.getItems().addAll(
-  		    "IN",
-  		    "OUT"
-  		);
-  	statusBox.setValue(statusBox.getItems().get(0));
-
-  	grid.add(statusBox, 1, 3);
-
-  	//---------------------------------------------------
-
-  	submitButton = new Button("SUBMIT");
-  	submitButton.setOnAction(new EventHandler<ActionEvent>() {
-
-      		     @Override
-      		     public void handle(ActionEvent e) {
-      		     	processAction(e);
-           	     }
-       	});
-  	grid.add(submitButton, 0, 4);
-
-  	doneButton = new Button("DONE");
-  	doneButton.setOnAction(new EventHandler<ActionEvent>() {
-
-      		     @Override
-      		     public void handle(ActionEvent e) {
-      		    	 myBook.done();
-      		     	//processAction(e);
-
-           	     }
-       	});
-  	grid.add(doneButton, 1, 4);
-
-
-
-		return grid;
+	private GridPane createFormContent()
+        {
+            GridPane grid = new GridPane();
+            grid.setAlignment(Pos.CENTER);
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(25, 25, 25, 25));
+            firstNameField = createInput(grid, firstNameField, "First Name:", 0);
+            lastNameField = createInput(grid, lastNameField, "Last Name:", 1);
+            createButton(grid, submitButton, "Submit", 3);
+            createButton(grid, doneButton, "CANCEL", 4);
+            return grid;
 	}
 
-
-
-
-
-
-	// Create the status log field
-	//-------------------------------------------------------------
-	private MessageView createStatusLog(String initialMessage)
+         private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
 	{
-
-		statusLog = new MessageView(initialMessage);
-
-		return statusLog;
+            Label Author = new Label(label);
+            grid.add(Author, 0, pos);
+            textfield = new TextField();
+            grid.add(textfield, 1, pos);
+            return textfield;
 	}
 
-	//-------------------------------------------------------------
-
-//-EDITED UP TO EVENT HANDLER's FOR MITRA ASGN2-----------------
-//--------------------------------------------------------------
-//--------------------------------------------------------------
-
-
-	// This method processes events generated from our GUI components.
-	// Make the ActionListeners delegate to this method
-	//THIS METHOD IS A HELPER ACTION
-	//-------------------------------------------------------------
-	public void processAction(Event evt)
+          private void createButton(GridPane grid, Button button, String nameButton, Integer pos)
 	{
-		clearErrorMessage();
-		String authorEntered = authorField.getText();
-		String titleEntered = titleField.getText();
-		String pubYearEntered = pubYearField.getText();
-		String statusEntered = (String)statusBox.getValue();
-		int pubYearNumeric = 0;
-		if(!pubYearEntered.equals(""))
-		{
-			pubYearNumeric = Integer.parseInt(pubYearEntered);
-		}
-
-		if((authorEntered == null) || (titleEntered == null)
-				|| (pubYearNumeric < 1800) || (pubYearNumeric > 2016))
-		{
-			displayErrorMessage("Error in input fields");
-		}
-		else
-		{
-
-			//--------THE FOLLOWING DOES NOT UPDATE DATABASE 2-22 (YES, IT DOES - 2-25-16: TOM)
-			Properties bookInsert = new Properties();
-			bookInsert.setProperty("author", authorEntered);
-			bookInsert.setProperty("title", titleEntered);
-			bookInsert.setProperty("pubYear", pubYearEntered);
-			bookInsert.setProperty("status", statusEntered);
-
-			myBook.setData(bookInsert);
-			myBook.update();
-			//displayMessage("Book Inserted!");
-
-		}
+            button = new Button(nameButton);
+            button.setId(Integer.toString(pos));
+            if(nameButton=="CANCEL")
+            {
+              button.setOnAction(new EventHandler<ActionEvent>() {
+              @Override
+                  public void handle(ActionEvent e) {
+                      myScout.done();
+                  }
+              });
+            }
+            else
+            {
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                  public void handle(ActionEvent e) {
+                      processAction(e);
+                    }
+                });
+            }
+            HBox btnContainer = new HBox(10);
+            btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
+            btnContainer.getChildren().add(button);
+            if (pos == 3) {
+                grid.add(btnContainer, 0, 4);
+            }
+            else {
+                grid.add(btnContainer, 1, 4);
+            }
+	}
+          public void processAction(Event evt)
+	{
+            Object source = evt.getSource();
+            Button clickedBtn = (Button) source;
+            if (clickedBtn.getId().equals("5") == true)
+            {
+            	myModel.stateChangeRequest("Done", null);
+            }
+            clearErrorMessage();
+            String firstName = firstNameField.getText();
+            if ((firstName == null) || (firstName.length() == 0))
+            {
+                displayErrorMessage("Please enter a scout!");
+                firstNameField.requestFocus();
+            }
 	}
 
-	/**
-	 * Process userid and pwd supplied when Submit button is hit.
-	 * Action is to pass this info on to the teller object
-	 */
-	//----------------------------------------------------------
-
-	//---------------------------------------------------------
-	public void updateState(String key, Object value)
+          public void displayMessage(String message)
 	{
-		// STEP 6: Be sure to finish the end of the 'perturbation'
-		// by indicating how the view state gets updated.
-		if (key.equals("LoginError") == true)
-		{
-			// display the passed text
-			displayErrorMessage((String)value);
-		}
-
+            statusLog.displayMessage(message);
 	}
 
-	/**
-	 * Display error message
-	 */
-	//----------------------------------------------------------
-	public void displayErrorMessage(String message)
+        public void displayErrorMessage(String message)
 	{
-		statusLog.displayErrorMessage(message);
+            statusLog.displayErrorMessage(message);
 	}
 
-	/**
-	 * Display message
-	 */
-	//----------------------------------------------------------
-	public void displayMessage(String message)
+        public void updateState(String key, Object value)
 	{
-		statusLog.displayMessage(message);
+            if (key.equals("EnterScoutViewError") == true)
+            {
+		displayErrorMessage((String)value);
+            }
 	}
 
-	/**
-	 * Clear error message
-	 */
-	//----------------------------------------------------------
-	public void clearErrorMessage()
+        public void clearErrorMessage()
 	{
-		statusLog.clearErrorMessage();
+            statusLog.clearErrorMessage();
 	}
-
-	//-LIBRARIAN VIEW METHODS-----------------------------------
-
 }
