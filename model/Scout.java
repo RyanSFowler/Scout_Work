@@ -19,7 +19,7 @@ import exception.InvalidPrimaryKeyException;
 import database.*;
 import impresario.IView;
 import userinterface.*;
-import userinterface.BookView;
+import userinterface.AddScoutView;
 
 
 /** The class containing the Account for the ATM application */
@@ -30,7 +30,7 @@ public class Scout extends EntityBase implements IView
 
 	protected Properties dependencies;
 	protected Stage myStage;
-	protected Librarian myTLC;
+	protected TreeLotCoordinator myTLC;
 
 	// GUI Components
 
@@ -44,7 +44,7 @@ public class Scout extends EntityBase implements IView
 		super(myTableName);
 
 		setDependencies();
-		String query = "SELECT * FROM " + myTableName + " WHERE (bookId = " + scoutId + ")";
+		String query = "SELECT * FROM " + myTableName + " WHERE (scoutId = " + scoutId + ")";
 
 		Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
 
@@ -79,7 +79,7 @@ public class Scout extends EntityBase implements IView
 
 			}
 		}
-		// If no Book found for this id, throw an exception
+
 		else
 		{
 			throw new InvalidPrimaryKeyException("No scout matching id : "
@@ -87,7 +87,7 @@ public class Scout extends EntityBase implements IView
 		}
 	}
 
-	// Can also be used to create a NEW Book (if the system it is part of
+	// Can also be used to create a NEW scout (if the system it is part of
 	// allows for a new book to be set up)
 	//----------------------------------------------------------
 	public Scout(Properties props)
@@ -98,7 +98,7 @@ public class Scout extends EntityBase implements IView
 		setData(props);
 	}
 
-	public Scout(TLC t)
+	public Scout(TreeLotCoordinator t)
 		{
 		super(myTableName);
 		myStage = MainStageContainer.getInstance();
@@ -198,11 +198,11 @@ public class Scout extends EntityBase implements IView
 				updateStatusMessage = "Scout data for new scout : " +  persistentState.getProperty("scoutId")
 					+ "installed successfully in database!";
 			}
-			Scene currentScene = (Scene)myViews.get("ScoutView");
+			Scene currentScene = (Scene)myViews.get("AddScoutView");
 
 			if (currentScene != null)
 			{
-					((ScoutView)currentScene.getRoot()).displayMessage("Scout saved successfully!");
+					((AddScoutView)currentScene.getRoot()).displayMessage("Scout saved successfully!");
 			}
 
 		}
@@ -211,11 +211,11 @@ public class Scout extends EntityBase implements IView
 			System.out.println("Error in installing Scout data in database!");
 			updateStatusMessage = "Error in installing Scout data in database!";
 
-			Scene currentScene = (Scene)myViews.get("ScoutView");
+			Scene currentScene = (Scene)myViews.get("AddScoutView");
 
 			if (currentScene != null)
 			{
-					((ScoutView)currentScene.getRoot()).displayErrorMessage("ERROR in Scout save!");
+					((AddScoutView)currentScene.getRoot()).displayErrorMessage("ERROR in Scout save!");
 			}
 		}
 	}
@@ -259,9 +259,9 @@ public class Scout extends EntityBase implements IView
 		if (currentScene == null)
 		{
 			// create our initial view
-			View newView = new ScoutView(this); // USE VIEW FACTORY
+			View newView = new AddScoutView(this); // USE VIEW FACTORY
 			currentScene = new Scene(newView);
-			myViews.put("ScoutView", currentScene);
+			myViews.put("AddScoutView", currentScene);
 		}
 
 		swapToView(currentScene);

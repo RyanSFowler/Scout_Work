@@ -29,7 +29,7 @@ public class ScoutCollection  extends EntityBase implements IView
 
 	private Vector<Book> scouts;
 	protected Stage myStage;
-	protected TLC myTLC;
+	protected TreeLotCoordinator myTLC;
 
 	// GUI Components
 
@@ -41,7 +41,7 @@ public class ScoutCollection  extends EntityBase implements IView
 		scouts = new Vector<Scout>();
 	}
 
-	public ScoutCollection(TLC t)
+	public ScoutCollection(TreeLotCoordinator t)
 	{
 		super(myTableName);
 		myStage = MainStageContainer.getInstance();
@@ -161,32 +161,27 @@ public class ScoutCollection  extends EntityBase implements IView
 			mySchema = getSchemaInfo(tableName);
 		}
 	}
-
-
 	//----------------------------------------------------------------------------------
-
-
-
-	public void findBooksWithTitleLike(String title)
+	public void findScoutsWithNameLike(String fn, String ln)
 	{
 
-		String query = "SELECT * FROM " + myTableName + " WHERE (title LIKE '%" + title + "%')";
+		String query = "SELECT * FROM " + myTableName + " WHERE (firstName LIKE '%" + fn + "%' AND lastName LIKE '%" + ln + "%')";
 
 		Vector allDataRetrieved = getSelectQueryResult(query);
 
 		if (allDataRetrieved != null)
 		{
-			books = new Vector<Book>();
+			scouts = new Vector<Scout>();
 
 			for (int cnt = 0; cnt < allDataRetrieved.size(); cnt++)
 			{
-				Properties nextBookData = (Properties)allDataRetrieved.elementAt(cnt);
+				Properties nextScoutData = (Properties)allDataRetrieved.elementAt(cnt);
 
-				Book book = new Book(nextBookData);
+				Scout scout = new Scout(nextScoutData);
 
-				if (book != null)
+				if (scout != null)
 				{
-					addBook(book);
+					addScout(scout);
 				}
 			}
 
