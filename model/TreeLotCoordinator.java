@@ -171,13 +171,13 @@ public class TreeLotCoordinator implements IView, IModel
 	 * create.
 	 */
 	//----------------------------------------------------------
-	/*public void doTransaction(String transactionType)
+	public void doTransaction(String transactionCategory, String transactionType)
 	{
 		try
 		{
-			Transaction trans = TransactionFactory.createTransaction(transactionType, myAccountHolder);
-
-			trans.subscribe("CancelTransaction", this);
+			EntityBase trans = EntityBaseFactory.createEntityBase(this, transactionCategory, transactionType);
+			//the below lines need work
+			trans.subscribe("EndTransaction", this);
 			trans.stateChangeRequest("DoYourJob", "");
 		}
 		catch (Exception ex)
@@ -187,7 +187,7 @@ public class TreeLotCoordinator implements IView, IModel
 					"Transaction Creation Failure: Unrecognized transaction " + ex.toString(),
 					Event.ERROR);
 		}
-	}*/
+	}
 
 	//------------------------------------------------------------
 	private void createAndShowTreeLotCoordinatorView()
@@ -202,13 +202,10 @@ public class TreeLotCoordinator implements IView, IModel
 			currentScene.getStylesheets().add("styleSheet.css");
 			myViews.put("TreeLotCoordinatorView", currentScene);
 		}
-
+				
 		swapToView(currentScene);
 	}
-	public void transactionDone()
-	{
-		createAndShowTreeLotCoordinatorView();
-	}
+
 	/** Register objects to receive state updates. */
 	//----------------------------------------------------------
 	public void subscribe(String key, IView subscriber)
@@ -231,7 +228,7 @@ public class TreeLotCoordinator implements IView, IModel
 	//-----------------------------------------------------------------------------
 	public void swapToView(Scene newScene)
 	{
-
+		
 		if (newScene == null)
 		{
 			System.out.println("TreeLotCoordinator.swapToView(): Missing view for display");
@@ -242,11 +239,12 @@ public class TreeLotCoordinator implements IView, IModel
 
 		myStage.setScene(newScene);
 		myStage.sizeToScene();
-
-
+		
+			
 		//Place in center
 		WindowPosition.placeCenter(myStage);
 
 	}
 
 }
+

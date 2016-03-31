@@ -1,0 +1,3 @@
+[3/31/16 2:14 PM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException: Root cannot be null>
+[3/31/16 2:14 PM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException: Root cannot be null>
+[3/31/16 2:14 PM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException: Root cannot be null>

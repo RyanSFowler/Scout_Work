@@ -29,7 +29,6 @@ import javafx.stage.Stage;
 import event.Event;
 import event.EventLog;
 import common.PropertyFile;
-//import model.Teller;
 import model.TreeLotCoordinator;
 import userinterface.MainStageContainer;
 import userinterface.WindowPosition;
@@ -82,7 +81,7 @@ public class TreeSales extends Application
 	}
 
 
-	/**
+	/** 
 	 * The "main" entry point for the application. Carries out actions to
 	 * set up the application
 	 */

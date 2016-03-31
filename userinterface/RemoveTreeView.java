@@ -25,47 +25,41 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+/**
+ *
+ * @author berghen
+ */
 
-public class AddScoutView extends View {
-
+public class RemoveTreeView extends View {
+        
         protected Button cancelButton;
         protected Button submitButton;
-	      private Button doneButton;
+	private Button doneButton;
         protected MessageView statusLog;
-        private TextField firstNameField;
-      	private TextField lastNameField;
-      	private TextField middleInitialField;
-      	private TextField dobField;
-      	private TextField phoneNumField;
-      	private TextField emailField;
-
-        public AddScoutView(IModel scout)
+        private TextField barcode;
+        
+        public RemoveTreeView(IModel book)
     {
-        super(scout, "AddScoutView");
+        super(book, "RemoveTreeView");
         // create a container for showing the contents
         VBox container = new VBox(10);
-        container.setAlignment(Pos.CENTER);
+        container.setAlignment(Pos.CENTER);	
         container.setPadding(new Insets(15, 5, 5, 5));
-
+        
         // create our GUI components, add them to this panel
 	container.getChildren().add(createTitle());
 	container.getChildren().add(createFormContent());
-
+        
 	// Error message area
 	container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
         populateFields();
-        myModel.subscribe("AddScoutViewError", this);
+        myModel.subscribe("RemoveTreeViewError", this);
     }
-
+        
         protected void populateFields()
 	{
-            firstNameField.setText("");
-            lastNameField.setText("");
-            middleInitialField.setText("");
-            dobField.setText("");
-            phoneNumField.setText("");
-            emailField.setText("");
+            barcode.setText("");
 	}
 
         private MessageView createStatusLog(String initialMessage)
@@ -73,14 +67,14 @@ public class AddScoutView extends View {
             statusLog = new MessageView(initialMessage);
             return statusLog;
 	}
-
+        
         // Create the title container
 	//-------------------------------------------------------------
 	private Node createTitle()
 	{
             HBox container = new HBox();
             container.setAlignment(Pos.CENTER);
-            Text titleText = new Text(" Add Scout ");
+            Text titleText = new Text(" Remove Tree ");
             titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
             titleText.setWrappingWidth(300);
             titleText.setTextAlignment(TextAlignment.CENTER);
@@ -88,7 +82,7 @@ public class AddScoutView extends View {
             container.getChildren().add(titleText);
             return container;
 	}
-
+        
         // Create the main form content
 	//-------------------------------------------------------------
 	private GridPane createFormContent()
@@ -98,17 +92,12 @@ public class AddScoutView extends View {
             grid.setHgap(10);
             grid.setVgap(10);
             grid.setPadding(new Insets(25, 25, 25, 25));
-            firstNameField = createInput(grid, firstNameField, "First Name:", 0);
-            lastNameField = createInput(grid, lastNameField, "Last Name:", 1);
-            middleInitialField = createInput(grid, middleInitialField, "Middle Initial:", 2);
-            dobField = createInput(grid, dobField, "Date of Birth:", 3);
-            phoneNumField = createInput(grid, phoneNumField, "Phone Number:", 4);
-            emailField = createInput(grid, emailField, "Email:", 5);
-            createButton(grid, submitButton, "OK", 6);
-            createButton(grid, doneButton, "CANCEL", 7);
+            barcode = createInput(grid, barcode, "Barcode:", 0);
+            createButton(grid, submitButton, "OK", 4);
+            createButton(grid, doneButton, "CANCEL", 5);           
             return grid;
 	}
-
+        
          private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
 	{
             Label Author = new Label(label);
@@ -117,7 +106,7 @@ public class AddScoutView extends View {
             grid.add(textfield, 1, pos);
             return textfield;
 	}
-
+         
           private void createButton(GridPane grid, Button button, String nameButton, Integer pos)
 	{
             button = new Button(nameButton);
@@ -147,32 +136,32 @@ public class AddScoutView extends View {
             	myModel.stateChangeRequest("Done", null);
             }
             clearErrorMessage();
-            String firstName = firstNameField.getText();
-            if ((firstName == null) || (firstName.length() == 0))
+            String barcodeField = barcode.getText();
+            if ((barcodeField == null) || (barcodeField.length() == 0))
             {
-                displayErrorMessage("Please enter a scout!");
-                firstNameField.requestFocus();
+                displayErrorMessage("Please enter a barcode!");
+                barcode.requestFocus();
             }
 	}
-
+          
           public void displayMessage(String message)
 	{
             statusLog.displayMessage(message);
 	}
-
+        
         public void displayErrorMessage(String message)
 	{
             statusLog.displayErrorMessage(message);
 	}
-
+        
         public void updateState(String key, Object value)
 	{
-            if (key.equals("AddScoutViewError") == true)
+            if (key.equals("RemoveTreeViewError") == true)
             {
 		displayErrorMessage((String)value);
             }
 	}
-
+        
         public void clearErrorMessage()
 	{
             statusLog.clearErrorMessage();

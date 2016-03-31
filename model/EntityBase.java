@@ -39,7 +39,7 @@ import userinterface.WindowPosition;
  *  Persistable */
 //==============================================================
 public abstract class EntityBase extends Persistable
-	implements IModel
+	implements IModel, IView
 {
 	protected ModelRegistry myRegistry;	// registry for entities interested in our events
 	private int referenceCount;		// the number of others using us
@@ -67,9 +67,12 @@ public abstract class EntityBase extends Persistable
 		// save our table name for later
 		myTableName = tablename;
 
+                
+                
 		// extract the schema from the database, calls methods in subclasses
 		initializeSchema(myTableName);
 
+                
 		// create a place to hold our state from the database
 		persistentState = new Properties();
 
@@ -146,6 +149,15 @@ public abstract class EntityBase extends Persistable
 		WindowPosition.placeCenter(myStage);
 		
     }
+     
+     /** Called via the IView relationship
+	 * Re-define in sub-class, if necessary
+	 */
+	//----------------------------------------------------------
+	public void updateState(String key, Object value)
+	{
+		stateChangeRequest(key, value);
+	}
 
 }
 

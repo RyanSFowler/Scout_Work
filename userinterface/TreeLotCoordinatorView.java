@@ -8,6 +8,7 @@ import java.nio.channels.SelectableChannel;
 import java.text.NumberFormat;
 import java.util.Properties;
 
+import model.TreeLotCoordinator;
 import javafx.event.Event;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -44,6 +45,7 @@ public class TreeLotCoordinatorView extends View
 {
 
 	// GUI stuff
+	private TreeLotCoordinator myTLC;
 	private TextField userid;
 	private PasswordField password;
 	private RadioButton scoutButton, treeButton, treeTypeButton, salesButton;
@@ -53,6 +55,8 @@ public class TreeLotCoordinatorView extends View
 	private Button addTreeTypeButton, modifyTreeTypeButton, removeTreeTypeButton;
 	private Button openShiftButton, closeShiftButton, recordSaleButton;
 	private Button englishButton, frenchButton;
+	private String transCategory;
+	private String transType;
 
 	// For showing error message
 	private MessageView statusLog;
@@ -63,6 +67,7 @@ public class TreeLotCoordinatorView extends View
 	{
 		super(treeLotCoordinator, "TreeLotCoordinatorView");
 
+		myTLC = (TreeLotCoordinator) treeLotCoordinator;
 		// create a container for showing the contents
 		VBox container = new VBox(10);
 		container.setStyle("-fx-background-color: #ffffff;");
@@ -126,6 +131,7 @@ public class TreeLotCoordinatorView extends View
 
        		     @Override
        		     public void handle(ActionEvent e) {
+       		    	transCategory = "Scout"; 
        		     	processOptionAction(e);    
             	     }
         	});
@@ -136,6 +142,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Add";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -146,6 +153,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Modify";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -156,6 +164,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Remove";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -174,6 +183,7 @@ public class TreeLotCoordinatorView extends View
 
        		     @Override
        		     public void handle(ActionEvent e) {
+       		    	transCategory = "Tree"; 
        		     	processOptionAction(e);    
             	     }
         	});
@@ -184,6 +194,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Add";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -194,6 +205,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Modify";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -204,6 +216,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Remove";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -222,6 +235,7 @@ public class TreeLotCoordinatorView extends View
 
        		     @Override
        		     public void handle(ActionEvent e) {
+       		    	transCategory = "TreeType";
        		     	processOptionAction(e);    
             	     }
         	});
@@ -232,6 +246,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Add";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -242,6 +257,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Modify";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -252,6 +268,7 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Remove";
 	  		     	processAction(e);    
 	       	     }
  			});
@@ -270,6 +287,7 @@ public class TreeLotCoordinatorView extends View
 
        		     @Override
        		     public void handle(ActionEvent e) {
+       		    	transCategory = "Sales";
        		     	processOptionAction(e);    
             	     }
         	});
@@ -363,7 +381,7 @@ public class TreeLotCoordinatorView extends View
 	//-------------------------------------------------------------
 	public void processAction(Event evt)
 	{
-		
+		myTLC.doTransaction(transCategory, transType);
 	}
 	
 	public void processOptionAction(Event evt)

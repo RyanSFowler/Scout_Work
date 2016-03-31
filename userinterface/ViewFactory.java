@@ -11,13 +11,13 @@ public class ViewFactory {
 		{
 			return new TreeLotCoordinatorView(model);
 		}
-		else if(viewName.equals("AddScoutView") == true)
+		/*else if(viewName.equals("AddScoutView") == true)
 		{
 			return new AddScoutView(model);
-		}
-		/*else if(viewName.equals("UpdateScoutView") == true)
+		}/*
+		else if(viewName.equals("ModifyScoutView") == true)
 		{
-			return new UpdateScoutView(model);
+			return new ModifyScoutView(model);
 		}
 		else if(viewName.equals("RemoveScoutView") == true)
 		{
@@ -30,12 +30,12 @@ public class ViewFactory {
 		else if(viewName.equals("ModifyTreeView") == true)
 		{
 			return new ModifyTreeView(model);
-		}
+		}*/
 		else if(viewName.equals("RemoveTreeView") == true)
 		{
 			return new RemoveTreeView(model);
 		}
-		else if(viewName.equals("AddTreeTypeView") == true)
+		/*else if(viewName.equals("AddTreeTypeView") == true)
 		{
 			return new AddTreeTypeView(model);
 		}
@@ -58,8 +58,8 @@ public class ViewFactory {
 		else if(viewName.equals("RecordSaleView") == true)
 		{
 			return new RecordSaleView(model);
-		}*/
-		/*else if(viewName.equals("TransferReceipt") == true)
+		}
+		else if(viewName.equals("TransferReceipt") == true)
 		{
 			return new TransferReceipt(model);
 		}*/

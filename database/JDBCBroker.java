@@ -86,6 +86,11 @@ public class JDBCBroker
 			username = props.getProperty("username");
 			password = props.getProperty("password");
 			server = props.getProperty("server");
+                        
+                        dbName = "spr16_csc429_lpass1";
+                        username = "lpass1";
+                        password = "pwd";
+                        server = "csdb.brockport.edu";
 			if (server == null)
 				server = "localhost";
 		}
