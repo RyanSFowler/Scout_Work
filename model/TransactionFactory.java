@@ -24,7 +24,7 @@ public class TransactionFactory
                         System.out.print("transType:" + transType);
 			//retValue = new Tree(myTreeLotCoordinator, transType);
 		}
-                
+		
 		/*if(transCategory.equals("Scout")){
 			retValue = new Scout(transType);
 		}

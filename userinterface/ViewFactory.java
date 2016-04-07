@@ -19,18 +19,14 @@ public class ViewFactory {
 		{
 			return new EnterScoutView(model);
 		}
-		/*else if(viewName.equals("RemoveScoutView") == true)
+		else if(viewName.equals("AddNewTreeView") == true)
 		{
-			return new RemoveScoutView(model);
+			return new AddNewTreeView(model);
+		}         
+		else if(viewName.equals("UpdateTreeView") == true)
+		{
+			return new UpdateTreeView(model);
 		}
-		else if(viewName.equals("AddTreeView") == true)
-		{
-			return new AddTreeView(model);
-		}
-		else if(viewName.equals("ModifyTreeView") == true)
-		{
-			return new ModifyTreeView(model);
-		}*/
 		else if(viewName.equals("RemoveTreeView") == true)
 		{
 			return new RemoveTreeView(model);

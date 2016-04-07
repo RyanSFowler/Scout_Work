@@ -6,12 +6,16 @@
 package userinterface;
 
 import impresario.IModel;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -31,15 +35,47 @@ public class EnterScoutView extends View {
 
         protected Button cancelButton;
         protected Button submitButton;
-	      private Button doneButton;
+        private Button doneButton;
         protected MessageView statusLog;
         private TextField firstNameField;
       	private TextField lastNameField;
         private Scout myScout;
+        
+        private Locale locale = new Locale("en", "CA");
+        private ResourceBundle buttons;
+        private ResourceBundle titles;
+        private ResourceBundle labels;
+        private ResourceBundle alerts;
+        
+        private String cancel;
+        private String submit;
+        private String firstName;
+        private String lastName;
+        private String title;
+        private String alertTitle;
+        private String alertSubTitle;
+        private String alertBody;
 
         public EnterScoutView(IModel scout)
     {
         super(scout, "EnterScoutView");
+        
+        Preferences prefs = Preferences.userNodeForPackage(EnterScoutView.class);
+        String langage = prefs.get("langage", null);
+        if (langage.toString().equals("en") == true)
+        {
+            locale = new Locale("en", "US");
+        }
+        else if (langage.toString().equals("fr") == true)
+        {
+            locale = new Locale("fr", "CA");
+        }
+        buttons = ResourceBundle.getBundle("ButtonsBundle", locale);
+        titles = ResourceBundle.getBundle("TitlesBundle", locale);
+        labels = ResourceBundle.getBundle("LabelsBundle", locale);
+        alerts = ResourceBundle.getBundle("AlertsBundle", locale);
+        refreshFormContents();
+        
         myScout=(Scout)scout;
         // create a container for showing the contents
         VBox container = new VBox(10);
@@ -75,7 +111,7 @@ public class EnterScoutView extends View {
 	{
             HBox container = new HBox();
             container.setAlignment(Pos.CENTER);
-            Text titleText = new Text(" Search Scouts ");
+            Text titleText = new Text(title);
             titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
             titleText.setWrappingWidth(300);
             titleText.setTextAlignment(TextAlignment.CENTER);
@@ -93,10 +129,10 @@ public class EnterScoutView extends View {
             grid.setHgap(10);
             grid.setVgap(10);
             grid.setPadding(new Insets(25, 25, 25, 25));
-            firstNameField = createInput(grid, firstNameField, "First Name:", 0);
-            lastNameField = createInput(grid, lastNameField, "Last Name:", 1);
-            createButton(grid, submitButton, "Submit", 3);
-            createButton(grid, doneButton, "CANCEL", 4);
+            firstNameField = createInput(grid, firstNameField, firstName, 0);
+            lastNameField = createInput(grid, lastNameField, lastName, 1);
+            createButton(grid, submitButton, submit, 4);
+            createButton(grid, doneButton, cancel, 3);
             return grid;
 	}
 
@@ -113,7 +149,7 @@ public class EnterScoutView extends View {
 	{
             button = new Button(nameButton);
             button.setId(Integer.toString(pos));
-            if(nameButton=="CANCEL")
+            if(nameButton==cancel)
             {
               button.setOnAction(new EventHandler<ActionEvent>() {
               @Override
@@ -149,13 +185,33 @@ public class EnterScoutView extends View {
             {
             	myModel.stateChangeRequest("Done", null);
             }
-            clearErrorMessage();
+            //clearErrorMessage();
             String firstName = firstNameField.getText();
-            if ((firstName == null) || (firstName.length() == 0))
+            String lastName = lastNameField.getText();
+            if ((firstName.length() == 0) || (lastName.length() == 0))
             {
-                displayErrorMessage("Please enter a scout!");
-                firstNameField.requestFocus();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(alertTitle);
+                alert.setHeaderText(alertSubTitle);
+                alert.setContentText(alertBody);
+                alert.showAndWait();
             }
+            else
+            {
+                // SEARCH AND MODIFY SCOUT
+            }
+	}
+          
+          private void refreshFormContents()
+        {
+            cancel = buttons.getString("cancelModifyScout");
+            submit = buttons.getString("submitModifyScout");
+            firstName = labels.getString("firstName");
+            lastName = labels.getString("lastName");
+            title = titles.getString("mainTitleModifyScout");
+            alertTitle = alerts.getString("ModifyScoutTitle");
+            alertSubTitle = alerts.getString("ModifyScoutSubTitle");
+            alertBody = alerts.getString("ModifyScoutBody");
 	}
 
           public void displayMessage(String message)

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package model;
-
+import java.util.Enumeration;
 import impresario.IModel;
 import impresario.IView;
 import java.util.Properties;
@@ -12,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import userinterface.View;
 import userinterface.ViewFactory;
-
+import java.sql.SQLException;
 
 public class Scout extends EntityBase implements IView, IModel {
 
@@ -38,7 +38,10 @@ public class Scout extends EntityBase implements IView, IModel {
                 createEnterScoutView();
             }
         }
+     /*public Scout(Properties p)
+     {
 
+     }*/
      public void createAddScoutView() {
             Scene currentScene = (Scene)myViews.get("AddScoutView");
 
@@ -46,6 +49,7 @@ public class Scout extends EntityBase implements IView, IModel {
             {
                 View newView = ViewFactory.createView("AddScoutView", this);
                 currentScene = new Scene(newView);
+                currentScene.getStylesheets().add("styleSheet.css");
                 myViews.put("AddScoutView", currentScene);
             }
             swapToView(currentScene);
@@ -58,6 +62,7 @@ public class Scout extends EntityBase implements IView, IModel {
             {
                 View newView = ViewFactory.createView("EnterScoutView", this);
                 currentScene = new Scene(newView);
+                currentScene.getStylesheets().add("styleSheet.css");
                 myViews.put("EnterScoutView", currentScene);
             }
             swapToView(currentScene);
@@ -70,17 +75,24 @@ public class Scout extends EntityBase implements IView, IModel {
             {
                 View newView = ViewFactory.createView("ModifyScoutView", this);
                 currentScene = new Scene(newView);
+                currentScene.getStylesheets().add("styleSheet.css");
                 myViews.put("ModifyScoutView", currentScene);
             }
             swapToView(currentScene);
         }
-
+        public static int compare(Scout a, Scout b)
+  	  {
+  		    String aNum = (String)a.getState("scoutId");
+  	    	String bNum = (String)b.getState("scoutId");
+  		    return aNum.compareTo(bNum);
+    	}
       public void createRemoveScoutView() {
              Scene currentScene = (Scene)myViews.get("RemoveScoutView");
              if (currentScene == null)
              {
                    View newView = ViewFactory.createView("RemoveScoutView", this);
                    currentScene = new Scene(newView);
+                   currentScene.getStylesheets().add("styleSheet.css");
                    myViews.put("RemoveScoutView", currentScene);
              }
              swapToView(currentScene);
@@ -93,6 +105,7 @@ public class Scout extends EntityBase implements IView, IModel {
               {
                   View newView = ViewFactory.createView("ScoutCollectionView", this);
                   currentScene = new Scene(newView);
+                  currentScene.getStylesheets().add("styleSheet.css");
                   myViews.put("ScoutCollectionView", currentScene);
               }
               swapToView(currentScene);
@@ -141,6 +154,66 @@ public class Scout extends EntityBase implements IView, IModel {
 	{
             stateChangeRequest(key, value);
 	}
+  //-----------------------------------------------------------------------------------
+	public void setData(Properties props)
+	{
+		persistentState = new Properties();
+		Enumeration allKeys = props.propertyNames();
+		while (allKeys.hasMoreElements() == true)
+		{
+			String nextKey = (String)allKeys.nextElement();
+			String nextValue = props.getProperty(nextKey);
+
+			if (nextValue != null)
+			{
+				persistentState.setProperty(nextKey, nextValue);
+			}
+		}
+	}
+	//-----------------------------------------------------------------------------------
+
+  public void update()
+	{
+		updateStateInDatabase();
+	}
+
+	//-----------------------------------------------------------------------------------
+	private void updateStateInDatabase()
+	{
+		try
+		{
+			if (persistentState.getProperty("scoutId") != null)
+			{
+				Properties whereClause = new Properties();
+				whereClause.setProperty("scoutId",
+				persistentState.getProperty("scoutId"));
+				updatePersistentState(mySchema, persistentState, whereClause);
+				updateStatusMessage = "scout data for scoutId number : " + persistentState.getProperty("scoutId") + " updated successfully in database!";
+				System.out.println("Trying to update Scout");
+			}
+			else
+			{
+
+				Integer scoutId =
+					insertAutoIncrementalPersistentState(mySchema, persistentState);
+				persistentState.setProperty("scoutId", "" + scoutId.intValue());
+				System.out.println("Scout data for new scout installed successfully in database");
+				updateStatusMessage = "Scout data for new scout : " +  persistentState.getProperty("scoutId")
+					+ "installed successfully in database!";
+			}
+			Scene currentScene = (Scene)myViews.get("AddScoutView");
+
+			if (currentScene != null)
+			{
+					System.out.println("Scout saved successfully!");
+			}
+
+		}
+    catch (SQLException ex)
+		{
+			System.out.println("Error in installing scout data in database!");
+		}
+  }
   public void done()
   {
     myTreeLotCoordinator.transactionDone();

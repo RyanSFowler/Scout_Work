@@ -13,11 +13,11 @@ import exception.InvalidPrimaryKeyException;
 import event.Event;
 import database.*;
 import impresario.IView;
-import userinterface.BookView;
+
 import userinterface.MainStageContainer;
 import userinterface.View;
 import userinterface.ViewFactory;
-import userinterface.BookCollectionView;
+
 //import userinterface.BookCollectionView;
 
 
@@ -27,7 +27,7 @@ public class ScoutCollection  extends EntityBase implements IView
 {
 	private static final String myTableName = "Scout";
 
-	private Vector<Book> scouts;
+	private Vector<Scout> scouts;
 	protected Stage myStage;
 	protected TreeLotCoordinator myTLC;
 
@@ -50,7 +50,7 @@ public class ScoutCollection  extends EntityBase implements IView
 	//----------------------------------------------------------------------------------
 	public void addScout(Scout a)
 	{
-		//book.add(a);
+
 		int index = findIndexToAdd(a);
 		scouts.insertElementAt(a,index); // To build up a collection sorted on some key
 	}
@@ -66,7 +66,7 @@ public class ScoutCollection  extends EntityBase implements IView
 		{
 			middle = (low+high)/2;
 
-			Scout midSession = books.elementAt(middle);
+			Scout midSession = scouts.elementAt(middle);
 
 			int result = Scout.compare(b,midSession);
 
@@ -114,10 +114,10 @@ public class ScoutCollection  extends EntityBase implements IView
 	public Scout retrieve(String scoutId)
 	{
 		Scout retValue = null;
-		for (int cnt = 0; cnt < books.size(); cnt++)
+		for (int cnt = 0; cnt < scouts.size(); cnt++)
 		{
 			Scout nextScout = scouts.elementAt(cnt);
-			String nextScoutId = (String)nextBk.getState("ScoutId");
+			String nextScoutId = (String)nextScout.getState("ScoutId");
 			if (nextScoutId.equals(scoutId) == true)
 			{
 				retValue = nextScout;
@@ -162,7 +162,7 @@ public class ScoutCollection  extends EntityBase implements IView
 		}
 	}
 	//----------------------------------------------------------------------------------
-	public void findScoutsWithNameLike(String fn, String ln)
+	/*public void findScoutsWithNameLike(String fn, String ln)
 	{
 
 		String query = "SELECT * FROM " + myTableName + " WHERE (firstName LIKE '%" + fn + "%' AND lastName LIKE '%" + ln + "%')";
@@ -188,7 +188,7 @@ public class ScoutCollection  extends EntityBase implements IView
 		}
 		else{}
 
-	}
+	}*/
 
 	//---------------------------------------------------------------
 	public void display()
@@ -199,7 +199,7 @@ public class ScoutCollection  extends EntityBase implements IView
 		}
 	}
 	//---------------------------------------------------------------
-	public void createAndShowScoutCollectionView()
+	/*public void createAndShowScoutCollectionView()
 	{
 		Scene currentScene = (Scene)myViews.get("ScoutCollectionView");
 
@@ -214,7 +214,7 @@ public class ScoutCollection  extends EntityBase implements IView
 		swapToView(currentScene);
 
 
-	}
+	}*/
 
 	public void done()
 	{

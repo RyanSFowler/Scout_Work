@@ -6,12 +6,17 @@
 package userinterface;
 
 import impresario.IModel;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -38,9 +43,39 @@ public class RemoveTreeView extends View {
         protected MessageView statusLog;
         private TextField barcode;
         
+        private Locale locale = new Locale("en", "CA");
+        private ResourceBundle buttons;
+        private ResourceBundle titles;
+        private ResourceBundle labels;
+        private ResourceBundle alerts;
+        private String cancelTitle;
+        private String submitTitle;
+        private String barcodeTitle;
+        private String title;
+        private String alertTitle;
+        private String alertSubTitle;
+        private String alertBody;
+        
         public RemoveTreeView(IModel book)
     {
         super(book, "RemoveTreeView");
+        
+        Preferences prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
+        String langage = prefs.get("langage", null);
+        if (langage.toString().equals("en") == true)
+        {
+            locale = new Locale("en", "US");
+        }
+        else if (langage.toString().equals("fr") == true)
+        {
+            locale = new Locale("fr", "CA");
+        }
+        buttons = ResourceBundle.getBundle("ButtonsBundle", locale);
+        titles = ResourceBundle.getBundle("TitlesBundle", locale);
+        labels = ResourceBundle.getBundle("LabelsBundle", locale);
+        alerts = ResourceBundle.getBundle("AlertsBundle", locale);
+        refreshFormContents();
+        
         // create a container for showing the contents
         VBox container = new VBox(10);
         container.setAlignment(Pos.CENTER);	
@@ -74,7 +109,7 @@ public class RemoveTreeView extends View {
 	{
             HBox container = new HBox();
             container.setAlignment(Pos.CENTER);
-            Text titleText = new Text(" Remove Tree ");
+            Text titleText = new Text(title);
             titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
             titleText.setWrappingWidth(300);
             titleText.setTextAlignment(TextAlignment.CENTER);
@@ -92,9 +127,9 @@ public class RemoveTreeView extends View {
             grid.setHgap(10);
             grid.setVgap(10);
             grid.setPadding(new Insets(25, 25, 25, 25));
-            barcode = createInput(grid, barcode, "Barcode:", 0);
-            createButton(grid, submitButton, "OK", 4);
-            createButton(grid, doneButton, "CANCEL", 5);           
+            barcode = createInput(grid, barcode, barcodeTitle, 0);
+            createButton(grid, submitButton, submitTitle, 4);
+            createButton(grid, doneButton, cancelTitle, 5);           
             return grid;
 	}
         
@@ -121,10 +156,10 @@ public class RemoveTreeView extends View {
             btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
             btnContainer.getChildren().add(button);
             if (pos == 4) {
-                grid.add(btnContainer, 0, 2);
+                grid.add(btnContainer, 1, 2);
             }
             else {
-                grid.add(btnContainer, 1, 2);
+                grid.add(btnContainer, 0, 2);
             }
 	}
           public void processAction(Event evt)
@@ -137,14 +172,43 @@ public class RemoveTreeView extends View {
             }
             clearErrorMessage();
             String barcodeField = barcode.getText();
-            if ((barcodeField == null) || (barcodeField.length() == 0))
+            if (clickedBtn.getId().equals("4") == true)
             {
-                displayErrorMessage("Please enter a barcode!");
-                barcode.requestFocus();
+                if ((barcodeField == null) || (barcodeField.length() == 0))
+                {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(alertTitle);
+                    alert.setHeaderText(alertSubTitle);
+                    alert.setContentText(alertBody);
+                    alert.showAndWait();
+                }
+                Properties props = new Properties();
+                props.setProperty("Barcode", barcode.getText());
+                try
+                {
+                    myModel.stateChangeRequest("RemoveTree", props);
+                    System.out.print("Remove Tree");
+                    populateFields();
+                }
+                catch (Exception ex)
+                {
+                    System.out.print("Error Remove Tree");
+                }
             }
 	}
           
-          public void displayMessage(String message)
+        private void refreshFormContents()
+        {
+            submitTitle = buttons.getString("submitTree");
+            cancelTitle = buttons.getString("cancelTree");
+            barcodeTitle = labels.getString("barcodeTree");
+            title = titles.getString("mainTitleRemoveTree");
+            alertTitle = alerts.getString("AddTreeTitle");
+            alertSubTitle = alerts.getString("AddTreeSubTitle");
+            alertBody = alerts.getString("DeleteTreeBody");
+        }
+          
+        public void displayMessage(String message)
 	{
             statusLog.displayMessage(message);
 	}
