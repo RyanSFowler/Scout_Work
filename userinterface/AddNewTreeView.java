@@ -13,6 +13,7 @@ import java.util.prefs.Preferences;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -53,6 +54,13 @@ public class AddNewTreeView extends View {
     private String alertTitle;
     private String alertSubTitle;
     private String alertBody;
+    
+    private String alertTitleSucceeded;
+    private String alertSubTitleSucceeded;
+    private String alertBodySucceeded;
+    
+    private String description;
+    
     
     public AddNewTreeView(IModel model) {
         super(model, "AddNewTreeView");
@@ -111,10 +119,7 @@ public class AddNewTreeView extends View {
         grid.setPadding(new Insets(25, 25, 25, 25));
         barcode = createInput(grid, barcode, barcodeTitle, 0);
         notes = new TextArea();
-        notes.setDisable(false);
-        notes.setWrapText(true);
-        notes.setPrefSize(300, 100);
-        grid.add(notes, 1, 2);
+        notes = createInputTextArea(grid, notes, description, 1);
         createButton(grid, submit, submitTitle, 1, 4, 1);
         createButton(grid, cancel, cancelTitle, 0, 4, 2);
         return grid;
@@ -123,10 +128,24 @@ public class AddNewTreeView extends View {
     private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
     {
         Label Author = new Label(label);
+        GridPane.setHalignment(Author, HPos.RIGHT);
         grid.add(Author, 0, pos);
         textfield = new TextField();
         grid.add(textfield, 1, pos);
         return textfield;
+    }
+    
+    private TextArea createInputTextArea(GridPane grid, TextArea textarea, String label, Integer pos)
+    {
+        Label Author = new Label(label);
+        GridPane.setHalignment(Author, HPos.RIGHT);
+        grid.add(Author, 0, pos);
+        textarea = new TextArea();
+        textarea.setDisable(false);
+        textarea.setWrapText(true);
+        textarea.setPrefSize(300, 100);
+        grid.add(textarea, 1, pos);
+        return textarea;
     }
     
     private void createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
@@ -175,14 +194,17 @@ public class AddNewTreeView extends View {
                 try
                 {
                     myModel.stateChangeRequest("AddNewTree", props);
-                    System.out.print("New Tree Add");
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(alertTitleSucceeded);
+                    alert.setHeaderText(alertSubTitleSucceeded);
+                    alert.setContentText(alertBodySucceeded);
+                    alert.showAndWait();
                     populateFields();
                 }
                 catch (Exception ex)
                 {
                     System.out.print("Error New Tree Add");
                 }
-                // SUBMIT
             }
         }
         else if (clickedBtn.getId().equals("2") == true)
@@ -196,10 +218,14 @@ public class AddNewTreeView extends View {
         submitTitle = buttons.getString("submitTree");
         cancelTitle = buttons.getString("cancelTree");
         barcodeTitle = labels.getString("barcodeTree");
+        description = labels.getString("notes");
         title = titles.getString("mainTitleAddTree");
         alertTitle = alerts.getString("AddTreeTitle");
         alertSubTitle = alerts.getString("AddTreeSubTitle");
         alertBody = alerts.getString("AddTreeBody");
+        alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
+        alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("AddTreeBodySucceeded");
     }
     
     

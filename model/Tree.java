@@ -139,7 +139,6 @@ public class Tree extends EntityBase implements IView, IModel {
                 if (persistentState.getProperty("Barcode") != null)
                 {
                 String query = "SELECT * FROM " + myTableName + " WHERE Barcode = '" + persistentState.getProperty("Barcode") + "' ;";
-                System.out.print("Query:" + query);
                 Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
                 if (allDataRetrieved != null && allDataRetrieved.size() == 1) {
                 Properties whereClause = new Properties();

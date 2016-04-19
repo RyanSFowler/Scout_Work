@@ -21,6 +21,10 @@ public class EntityBaseFactory {
             if(transCategory.equals("Scout")){
                 retValue = new Scout(myTreeLotCoordinator, transType);
             }
+            if(transCategory.equals("TreeType")){
+                retValue = new TreeType(myTreeLotCoordinator, transType);
+            }
+
 
 
 		/*if(transCategory.equals("Scout")){

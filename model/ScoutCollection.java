@@ -1,3 +1,4 @@
+
 // specify the package
 package model;
 
@@ -13,24 +14,24 @@ import exception.InvalidPrimaryKeyException;
 import event.Event;
 import database.*;
 import impresario.IView;
-
+import userinterface.EnterModifyScoutView;
 import userinterface.MainStageContainer;
 import userinterface.View;
 import userinterface.ViewFactory;
+import userinterface.ScoutCollectionView;
+import userinterface.EnterRemoveScoutView;
 
-//import userinterface.BookCollectionView;
 
-
-/** The class containing the BookCollection */
+/** The class containing the ScoutCollection */
 //==============================================================
 public class ScoutCollection  extends EntityBase implements IView
 {
-	private static final String myTableName = "Scout";
+	private static final String myTableName = "SCOUT";
 
-	private Vector<Scout> scouts;
+	private Vector<Scout> scouts = new Vector<Scout>();
 	protected Stage myStage;
-	protected TreeLotCoordinator myTLC;
-
+	protected TreeLotCoordinator myTreeLotCoordinator;
+	protected Scout scout;
 	// GUI Components
 
 	// constructor for this class
@@ -38,21 +39,23 @@ public class ScoutCollection  extends EntityBase implements IView
 	public ScoutCollection()   //(BookHolder cust) for param is removed
 	{
 		super(myTableName);
-		scouts = new Vector<Scout>();
+		//scouts = new Vector<Scout>();
 	}
 
-	public ScoutCollection(TreeLotCoordinator t)
+	public ScoutCollection(TreeLotCoordinator tlc)
 	{
 		super(myTableName);
 		myStage = MainStageContainer.getInstance();
-		myTLC = t;
+		myTreeLotCoordinator = tlc;
 	}
 	//----------------------------------------------------------------------------------
-	public void addScout(Scout a)
+	public void addScout(Scout s)
 	{
 
-		int index = findIndexToAdd(a);
-		scouts.insertElementAt(a,index); // To build up a collection sorted on some key
+		int index = findIndexToAdd(s);
+		scouts.insertElementAt(s,index); // To build up a collection sorted on some key
+		System.out.println("addScout:"+s.getEntryListView());
+		System.out.println("Index:" + index);
 	}
 	//----------------------------------------------------------------------------------
 	private int findIndexToAdd(Scout b)
@@ -95,7 +98,7 @@ public class ScoutCollection  extends EntityBase implements IView
 	//----------------------------------------------------------
 	public Object getState(String key)
 	{
-		if (key.equals("Scouts"))
+		if (key.equals("Scout"))
 			return scouts;
 		else
 		if (key.equals("ScoutList"))
@@ -104,11 +107,11 @@ public class ScoutCollection  extends EntityBase implements IView
 	}
 
 	//----------------------------------------------------------------
-	public void stateChangeRequest(String key, Object value)
+	/*public void stateChangeRequest(String key, Object value)
 	{
 
 		myRegistry.updateSubscribers(key, this);
-	}
+	}*/
 
 	//----------------------------------------------------------
 	public Scout retrieve(String scoutId)
@@ -117,8 +120,8 @@ public class ScoutCollection  extends EntityBase implements IView
 		for (int cnt = 0; cnt < scouts.size(); cnt++)
 		{
 			Scout nextScout = scouts.elementAt(cnt);
-			String nextScoutId = (String)nextScout.getState("ScoutId");
-			if (nextScoutId.equals(scoutId) == true)
+			String nextScoutNum = (String)nextScout.getState("ScoutId");
+			if (nextScoutNum.equals(scoutId) == true)
 			{
 				retValue = nextScout;
 				return retValue; // we should say 'break;' here
@@ -127,6 +130,13 @@ public class ScoutCollection  extends EntityBase implements IView
 
 		return retValue;
 	}
+	public void stateChangeRequest(String key, Object value)
+{
+				 if (key.equals("Done") == true)
+				 {
+						 myTreeLotCoordinator.createAndShowTreeLotCoordinatorView();
+				 }
+}
 
 	/** Called via the IView relationship */
 	//----------------------------------------------------------
@@ -162,16 +172,18 @@ public class ScoutCollection  extends EntityBase implements IView
 		}
 	}
 	//----------------------------------------------------------------------------------
-	/*public void findScoutsWithNameLike(String fn, String ln)
+
+
+	public void findScoutsWithNameLike(String first, String last)
 	{
 
-		String query = "SELECT * FROM " + myTableName + " WHERE (firstName LIKE '%" + fn + "%' AND lastName LIKE '%" + ln + "%')";
-
-		Vector allDataRetrieved = getSelectQueryResult(query);
-
+		String query = "SELECT * FROM " + myTableName + " WHERE ((FirstName LIKE '" + first +	"') AND (LastName LIKE '" + last + "'));";
+		System.out.println(query);
+		Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
+		System.out.println(allDataRetrieved);
 		if (allDataRetrieved != null)
 		{
-			scouts = new Vector<Scout>();
+			//scouts = new Vector<Scout>();
 
 			for (int cnt = 0; cnt < allDataRetrieved.size(); cnt++)
 			{
@@ -179,16 +191,20 @@ public class ScoutCollection  extends EntityBase implements IView
 
 				Scout scout = new Scout(nextScoutData);
 
+
+
 				if (scout != null)
 				{
+					System.out.println("Scout:"+scout.getEntryListView());
 					addScout(scout);
+					System.out.println("Scouts:"+scouts);
 				}
 			}
 
 		}
 		else{}
 
-	}*/
+	}
 
 	//---------------------------------------------------------------
 	public void display()
@@ -199,26 +215,30 @@ public class ScoutCollection  extends EntityBase implements IView
 		}
 	}
 	//---------------------------------------------------------------
-	/*public void createAndShowScoutCollectionView()
+	public void createAndShowScoutCollectionView(ScoutCollection sc)
 	{
 		Scene currentScene = (Scene)myViews.get("ScoutCollectionView");
-
 		if (currentScene == null)
 		{
 			// create our initial view
-			View newView = new ScoutCollectionView(this); // USE VIEW FACTORY
+			View newView = new ScoutCollectionView(sc); // USE VIEW FACTORY
 			currentScene = new Scene(newView);
+			currentScene.getStylesheets().add("styleSheet.css");
 			myViews.put("ScoutCollectionView", currentScene);
 		}
 
 		swapToView(currentScene);
 
 
-	}*/
+	}
+	public void modifyDone()
+	{
+		scout.modifyScoutDone();
 
+	}
 	public void done()
 	{
-		myTLC.transactionDone();
+		myTreeLotCoordinator.transactionDone();
 
 	}
 }

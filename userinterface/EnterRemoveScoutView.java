@@ -12,6 +12,7 @@ import java.util.prefs.Preferences;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -31,7 +32,7 @@ import javafx.scene.text.TextAlignment;
 import model.Scout;
 
 
-public class EnterScoutView extends View {
+public class EnterRemoveScoutView extends View {
 
         protected Button cancelButton;
         protected Button submitButton;
@@ -40,13 +41,13 @@ public class EnterScoutView extends View {
         private TextField firstNameField;
       	private TextField lastNameField;
         private Scout myScout;
-        
+
         private Locale locale = new Locale("en", "CA");
         private ResourceBundle buttons;
         private ResourceBundle titles;
         private ResourceBundle labels;
         private ResourceBundle alerts;
-        
+
         private String cancel;
         private String submit;
         private String firstName;
@@ -56,11 +57,11 @@ public class EnterScoutView extends View {
         private String alertSubTitle;
         private String alertBody;
 
-        public EnterScoutView(IModel scout)
+        public EnterRemoveScoutView(IModel scout)
     {
-        super(scout, "EnterScoutView");
-        
-        Preferences prefs = Preferences.userNodeForPackage(EnterScoutView.class);
+        super(scout, "EnterRemoveScoutView");
+
+        Preferences prefs = Preferences.userNodeForPackage(EnterRemoveScoutView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -75,7 +76,7 @@ public class EnterScoutView extends View {
         labels = ResourceBundle.getBundle("LabelsBundle", locale);
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
         refreshFormContents();
-        
+
         myScout=(Scout)scout;
         // create a container for showing the contents
         VBox container = new VBox(10);
@@ -90,7 +91,7 @@ public class EnterScoutView extends View {
 	container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
         populateFields();
-        myModel.subscribe("EnterScoutViewError", this);
+        myModel.subscribe("EnterRemoveScoutViewError", this);
     }
 
         protected void populateFields()
@@ -139,6 +140,7 @@ public class EnterScoutView extends View {
          private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
 	{
             Label Author = new Label(label);
+            GridPane.setHalignment(Author, HPos.RIGHT);
             grid.add(Author, 0, pos);
             textfield = new TextField();
             grid.add(textfield, 1, pos);
@@ -201,17 +203,17 @@ public class EnterScoutView extends View {
                 // SEARCH AND MODIFY SCOUT
             }
 	}
-          
+
           private void refreshFormContents()
         {
             cancel = buttons.getString("cancelModifyScout");
-            submit = buttons.getString("submitModifyScout");
+            submit = buttons.getString("submitRemoveScout");
             firstName = labels.getString("firstName");
             lastName = labels.getString("lastName");
-            title = titles.getString("mainTitleModifyScout");
-            alertTitle = alerts.getString("ModifyScoutTitle");
-            alertSubTitle = alerts.getString("ModifyScoutSubTitle");
-            alertBody = alerts.getString("ModifyScoutBody");
+            title = titles.getString("mainTitleRemoveScout");
+            alertTitle = alerts.getString("RemoveScoutTitle");
+            alertSubTitle = alerts.getString("RemoveScoutSubTitle");
+            alertBody = alerts.getString("RemoveScoutBody");
 	}
 
           public void displayMessage(String message)
@@ -226,7 +228,7 @@ public class EnterScoutView extends View {
 
         public void updateState(String key, Object value)
 	{
-            if (key.equals("EnterScoutViewError") == true)
+            if (key.equals("EnterRemoveScoutViewError") == true)
             {
 		displayErrorMessage((String)value);
             }

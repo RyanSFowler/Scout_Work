@@ -1,18 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package userinterface;
 
 import impresario.IModel;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -29,30 +25,41 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import model.Scout;
+import model.TreeLotCoordinator;
+import model.ScoutCollection;
 
 
-public class RemoveScoutView extends View {
+public class EnterModifyScoutView extends View {
 
         protected Button cancelButton;
         protected Button submitButton;
+        private Button doneButton;
         protected MessageView statusLog;
+        private TextField firstNameField;
+      	private TextField lastNameField;
+        private Scout myScout;
+
         private Locale locale = new Locale("en", "CA");
         private ResourceBundle buttons;
         private ResourceBundle titles;
         private ResourceBundle labels;
         private ResourceBundle alerts;
-        private String cancelTitle;
-        private String submitTitle;
+
+        private String cancel;
+        private String submit;
+        private String firstName;
+        private String lastName;
         private String title;
         private String alertTitle;
         private String alertSubTitle;
         private String alertBody;
 
-        public RemoveScoutView(IModel s)
+        public EnterModifyScoutView(IModel scout)
     {
-        super(s, "RemoveScoutView");
+        super(scout, "EnterModifyScoutView");
 
-        //Preferences prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
+        Preferences prefs = Preferences.userNodeForPackage(EnterModifyScoutView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -68,6 +75,7 @@ public class RemoveScoutView extends View {
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
         refreshFormContents();
 
+        myScout=(Scout)scout;
         // create a container for showing the contents
         VBox container = new VBox(10);
         container.setAlignment(Pos.CENTER);
@@ -81,12 +89,13 @@ public class RemoveScoutView extends View {
 	container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
         populateFields();
-        myModel.subscribe("RemoveScoutViewError", this);
+        myModel.subscribe("EnterModifyScoutViewError", this);
     }
 
         protected void populateFields()
 	{
-            barcode.setText("");
+            firstNameField.setText("");
+            lastNameField.setText("");
 	}
 
         private MessageView createStatusLog(String initialMessage)
@@ -119,14 +128,17 @@ public class RemoveScoutView extends View {
             grid.setHgap(10);
             grid.setVgap(10);
             grid.setPadding(new Insets(25, 25, 25, 25));
-            createButton(grid, submitButton, submitTitle, 4);
-            createButton(grid, cancelButton, cancelTitle, 5);
+            firstNameField = createInput(grid, firstNameField, firstName, 0);
+            lastNameField = createInput(grid, lastNameField, lastName, 1);
+            createButton(grid, submitButton, submit, 4);
+            createButton(grid, doneButton, cancel, 3);
             return grid;
 	}
 
          private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
 	{
             Label Author = new Label(label);
+            GridPane.setHalignment(Author, HPos.RIGHT);
             grid.add(Author, 0, pos);
             textfield = new TextField();
             grid.add(textfield, 1, pos);
@@ -137,20 +149,32 @@ public class RemoveScoutView extends View {
 	{
             button = new Button(nameButton);
             button.setId(Integer.toString(pos));
-            button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-                public void handle(ActionEvent e) {
-                    processAction(e);
-                }
-            });
+            if(nameButton==cancel)
+            {
+              button.setOnAction(new EventHandler<ActionEvent>() {
+              @Override
+                  public void handle(ActionEvent e) {
+                      myScout.done();
+                  }
+              });
+            }
+            else
+            {
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                  public void handle(ActionEvent e) {
+                      processAction(e);
+                    }
+                });
+            }
             HBox btnContainer = new HBox(10);
             btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
             btnContainer.getChildren().add(button);
-            if (pos == 4) {
-                grid.add(btnContainer, 1, 2);
+            if (pos == 3) {
+                grid.add(btnContainer, 0, 4);
             }
             else {
-                grid.add(btnContainer, 0, 2);
+                grid.add(btnContainer, 1, 4);
             }
 	}
           public void processAction(Event evt)
@@ -161,43 +185,42 @@ public class RemoveScoutView extends View {
             {
             	myModel.stateChangeRequest("Done", null);
             }
-            clearErrorMessage();
-            if (clickedBtn.getId().equals("4") == true)
+            //clearErrorMessage();
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            if ((firstName.length() == 0) || (lastName.length() == 0))
             {
-                if ((barcodeField == null) || (barcodeField.length() == 0))
-                {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(alertTitle);
-                    alert.setHeaderText(alertSubTitle);
-                    alert.setContentText(alertBody);
-                    alert.showAndWait();
-                }
-                Properties props = new Properties();
-                //////////
-                try
-                {
-                    myModel.stateChangeRequest("RemoveScout", props);
-                    System.out.print("Remove Scout ");
-                    populateFields();
-                }
-                catch (Exception ex)
-                {
-                    System.out.print("Error Remove Scout");
-                }
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(alertTitle);
+                alert.setHeaderText(alertSubTitle);
+                alert.setContentText(alertBody);
+                alert.showAndWait();
+            }
+            else
+            {
+                searchScouts(firstName,lastName);
             }
 	}
-
-        private void refreshFormContents()
+        public void searchScouts(String f,String l)
         {
-            submitTitle = buttons.getString("submitScout");
-            cancelTitle = buttons.getString("cancelScout");
-            title = titles.getString("mainTitleRemoveScout");
-            alertTitle = alerts.getString("RemoveScoutTitle");
-            alertSubTitle = alerts.getString("RemoveScoutSubTitle");
-            alertBody = alerts.getString("RemoveScoutBody");
+          ScoutCollection sc = new ScoutCollection();
+          sc.findScoutsWithNameLike(f,l);
+          sc.createAndShowScoutCollectionView(sc);
         }
 
-        public void displayMessage(String message)
+          private void refreshFormContents()
+        {
+            cancel = buttons.getString("cancelModifyScout");
+            submit = buttons.getString("submitModifyScout");
+            firstName = labels.getString("firstName");
+            lastName = labels.getString("lastName");
+            title = titles.getString("mainTitleModifyScout");
+            alertTitle = alerts.getString("ModifyScoutTitle");
+            alertSubTitle = alerts.getString("ModifyScoutSubTitle");
+            alertBody = alerts.getString("ModifyScoutBody");
+	}
+
+          public void displayMessage(String message)
 	{
             statusLog.displayMessage(message);
 	}
@@ -209,7 +232,7 @@ public class RemoveScoutView extends View {
 
         public void updateState(String key, Object value)
 	{
-            if (key.equals("RemoveScoutViewError") == true)
+            if (key.equals("EnterModifyScoutViewError") == true)
             {
 		displayErrorMessage((String)value);
             }

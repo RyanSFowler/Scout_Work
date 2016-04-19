@@ -4,21 +4,23 @@
  * and open the template in the editor.
  */
 package userinterface;
-import java.util.Properties;
+
 import impresario.IModel;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -28,51 +30,51 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import model.Scout;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
+/**
+ *
+ * @author florianjousselin
+ */
 public class AddScoutView extends View {
 
-        protected Button cancelButton;
-        protected Button submitButton;
-        protected MessageView statusLog;
-        private TextField firstNameField;
-      	private TextField lastNameField;
-      	private TextField middleInitialField;
-      	private TextField dobField;
-      	private TextField phoneNumField;
-      	private TextField emailField;
+    private TextField firstNameField;
+    private TextField lastNameField;
+    private TextField middleInitialField;
+    private TextField dobField;
+    private TextField phoneNumField;
+    private TextField emailField;
+    protected Button cancel;
+    protected Button submit;
 
-        private Scout myScout;
+    private Locale locale = new Locale("en", "CA");
+    private ResourceBundle buttons;
+    private ResourceBundle titles;
+    private ResourceBundle labels;
+    private ResourceBundle alerts;
+    private String cancelTitle;
+    private String submitTitle;
 
-        private Locale locale = new Locale("en", "CA");
-        private ResourceBundle buttons;
-        private ResourceBundle titles;
-        private ResourceBundle labels;
-        private ResourceBundle alerts;
+    private String firstNameTitle;
+    private String lastNameTitle;
+    private String middleTitle;
+    private String dobTitle;
+    private String phoneTitle;
+    private String emailTitle;
 
-        private String cancel;
-        private String submit;
-        private Button doneButton;
-        private String firstName;
-        private String lastName;
-        private String middle;
-        private String dob;
-        private String phone;
-        private String email;
+    private String title;
+    private String alertTitle;
+    private String alertSubTitle;
+    private String alertBody;
 
-        private String title;
-        private String alertTitle;
-        private String alertSubTitle;
-        private String alertBody;
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        Date date = new Date();
-        public AddScoutView(IModel scout)
-    {
-        super(scout, "AddScoutView");
+    private String alertTitleSucceeded;
+    private String alertSubTitleSucceeded;
+    private String alertBodySucceeded;
+
+    private String description;
+
+
+    public AddScoutView(IModel model) {
+        super(model, "AddScoutView");
         Preferences prefs = Preferences.userNodeForPackage(AddScoutView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
@@ -88,131 +90,115 @@ public class AddScoutView extends View {
         labels = ResourceBundle.getBundle("LabelsBundle", locale);
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
         refreshFormContents();
+        displayWindow();
 
-        myScout=(Scout)scout;
-        // create a container for showing the contents
+    }
+
+
+
+    public void displayWindow()
+    {
         VBox container = new VBox(10);
         container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(15, 5, 5, 5));
 
-        // create our GUI components, add them to this panel
         container.getChildren().add(createTitle());
 	container.getChildren().add(createFormContent());
 
-	// Error message area
-	container.getChildren().add(createStatusLog("                                            "));
+        //container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
         populateFields();
-        myModel.subscribe("AddScoutViewError", this);
+        myModel.subscribe("LoginError", this);
     }
 
-        protected void populateFields()
-	{
-            firstNameField.setText("");
-            lastNameField.setText("");
-            middleInitialField.setText("");
-            dobField.setText("");
-            phoneNumField.setText("");
-            emailField.setText("");
-	}
+    public Node createTitle()
+    {
+        HBox container = new HBox();
+        container.setAlignment(Pos.CENTER);
+        Text titleText = new Text(title);
+        titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        titleText.setWrappingWidth(300);
+        titleText.setTextAlignment(TextAlignment.CENTER);
+        titleText.setFill(Color.DARKGREEN);
+        container.getChildren().add(titleText);
+        return container;
+    }
 
-        private MessageView createStatusLog(String initialMessage)
-	{
-            statusLog = new MessageView(initialMessage);
-            return statusLog;
-	}
+    private GridPane createFormContent()
+    {
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(25, 25, 25, 25));
 
-        // Create the title container
-	//-------------------------------------------------------------
-	private Node createTitle()
-	{
-            HBox container = new HBox();
-            container.setAlignment(Pos.CENTER);
-            Text titleText = new Text(title);
-            titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-            titleText.setWrappingWidth(300);
-            titleText.setTextAlignment(TextAlignment.CENTER);
-            titleText.setFill(Color.DARKGREEN);
-            container.getChildren().add(titleText);
-            return container;
-	}
+        firstNameField = createInput(grid, firstNameField, firstNameTitle, 0);
+        middleInitialField = createInput(grid, middleInitialField, middleTitle, 1);
+        lastNameField = createInput(grid, lastNameField, lastNameTitle, 2);
+        dobField = createInput(grid, dobField, dobTitle, 3);
+        phoneNumField = createInput(grid, phoneNumField, phoneTitle, 4);
+        emailField = createInput(grid, emailField, emailTitle, 5);
+        createButton(grid, submit, submitTitle, 1, 6, 1);
+        createButton(grid, cancel, cancelTitle, 0, 6, 2);
+        return grid;
+    }
 
-        // Create the main form content
-	//-------------------------------------------------------------
-	private GridPane createFormContent()
+    private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
+    {
+        Label Author = new Label(label);
+        GridPane.setHalignment(Author, HPos.RIGHT);
+        grid.add(Author, 0, pos);
+        textfield = new TextField();
+        grid.add(textfield, 1, pos);
+        return textfield;
+    }
+
+    private TextArea createInputTextArea(GridPane grid, TextArea textarea, String label, Integer pos)
+    {
+        Label Author = new Label(label);
+        GridPane.setHalignment(Author, HPos.RIGHT);
+        grid.add(Author, 0, pos);
+        textarea = new TextArea();
+        textarea.setDisable(false);
+        textarea.setWrapText(true);
+        textarea.setPrefSize(300, 100);
+        grid.add(textarea, 1, pos);
+        return textarea;
+    }
+
+    private void createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
+    {
+        button = new Button(nameButton);
+        button.setId(Integer.toString(id));
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent e) {
+                    processAction(e);
+                }
+            });
+        HBox btnContainer = new HBox(10);
+        btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
+        btnContainer.getChildren().add(button);
+        grid.add(btnContainer, pos1, pos2);
+    }
+
+    public void processAction(Event evt)
+    {
+        String mI;
+        Object source = evt.getSource();
+        Button clickedBtn = (Button) source;
+        if (clickedBtn.getId().equals("1") == true)
         {
-            GridPane grid = new GridPane();
-            grid.setAlignment(Pos.CENTER);
-            grid.setHgap(10);
-            grid.setVgap(10);
-            grid.setPadding(new Insets(50, 50, 50, 50));
-            firstNameField = createInput(grid, firstNameField, firstName, 0);
-            lastNameField = createInput(grid, lastNameField, lastName, 1);
-            middleInitialField = createInput(grid, middleInitialField, middle, 2);
-            dobField = createInput(grid, dobField, dob, 3);
-            phoneNumField = createInput(grid, phoneNumField, phone, 4);
-            emailField = createInput(grid, emailField, email, 5);
-            createButton(grid, submitButton, submit, 7);
-            createButton(grid, doneButton, cancel, 6);
-            return grid;
-	}
-
-         private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
-	{
-            Label Author = new Label(label);
-            grid.add(Author, 0, pos);
-            textfield = new TextField();
-            grid.add(textfield, 1, pos);
-            return textfield;
-	}
-
-          private void createButton(GridPane grid, Button button, String nameButton, Integer pos)
-	{
-            button = new Button(nameButton);
-            button.setId(Integer.toString(pos));
-            if(nameButton==cancel)
+            if(middleInitialField.getText().isEmpty() == true)
             {
-              button.setOnAction(new EventHandler<ActionEvent>() {
-              @Override
-                  public void handle(ActionEvent e) {
-                      myScout.done();
-                  }
-              });
+              mI="";
             }
             else
             {
-                button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                  public void handle(ActionEvent e) {
-                      processAction(e);
-                    }
-                });
-              }
-            HBox btnContainer = new HBox(10);
-            btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
-            btnContainer.getChildren().add(button);
-            if (pos == 6) {
-                grid.add(btnContainer, 0, 10);
+              mI = middleInitialField.getText();
             }
-            else {
-                grid.add(btnContainer, 1, 10);
-            }
-	}
-          public void processAction(Event evt)
-	{
-            Object source = evt.getSource();
-            Button clickedBtn = (Button) source;
-            if (clickedBtn.getId().equals("5") == true)
-            {
-            	myModel.stateChangeRequest("Done", null);
-            }
-            String firstName = firstNameField.getText();
-            String lastName = lastNameField.getText();
-            String middle = middleInitialField.getText();
-            String dob = dobField.getText();
-            String phone = phoneNumField.getText();
-            String email = emailField.getText();
-            if ((firstName.length() == 0) || (lastName.length() == 0) || (middle.length() == 0) || (dob.length() == 0) || (phone.length() == 0) || (email.length() == 0))
+            if ((firstNameField.getText().isEmpty() == true) || (lastNameField.getText().isEmpty() == true)
+                  || (dobField.getText().isEmpty() == true) || (phoneNumField.getText().isEmpty() == true) || (emailField.getText().isEmpty() == true))
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -222,55 +208,71 @@ public class AddScoutView extends View {
             }
             else
             {
-                  Properties scoutInsert = new Properties();
-                  scoutInsert.setProperty("FirstName", firstName);
-                  scoutInsert.setProperty("MiddleInitial", middle);
-                  scoutInsert.setProperty("LastName", lastName);
-                  scoutInsert.setProperty("DateOfBirth", dob);
-                  scoutInsert.setProperty("PhoneNumber", phone);
-                  scoutInsert.setProperty("Email", email);
-                  scoutInsert.setProperty("Status", "Active");
-                  scoutInsert.setProperty("DateStatusUpdated",dateFormat.format(date));
-                  
-                  myScout.setData(scoutInsert);
-                  myScout.update();
+                Properties props = new Properties();
+                props.setProperty("FirstName", firstNameField.getText());
+                props.setProperty("MiddleInitial", mI);
+                props.setProperty("LastName", lastNameField.getText());
+                props.setProperty("DateOfBirth", dobField.getText());
+                props.setProperty("PhoneNumber", phoneNumField.getText());
+                props.setProperty("Email", emailField.getText());
+                props.setProperty("Status", "Active");
+                try
+                {
+                    myModel.stateChangeRequest("AddScout", props);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(alertTitleSucceeded);
+                    alert.setHeaderText(alertSubTitleSucceeded);
+                    alert.setContentText(alertBodySucceeded);
+                    alert.showAndWait();
+                    populateFields();
+                }
+                catch (Exception ex)
+                {
+                    System.out.print("Error New Scout Add");
+                }
             }
-	}
-
-        private void refreshFormContents()
+        }
+        else if (clickedBtn.getId().equals("2") == true)
         {
-            firstName = labels.getString("firstName");
-            lastName = labels.getString("lastName");
-            middle = labels.getString("middle");
-            dob = labels.getString("dateOfBirth");
-            phone = labels.getString("phone");
-            email = labels.getString("email");
+            myModel.stateChangeRequest("Done", null);
+        }
+    }
 
-            submit = buttons.getString("submitAddScout");
-            cancel = buttons.getString("cancelAddScout");
+    private void refreshFormContents()
+    {
+        submitTitle = buttons.getString("submitAddScout");
+        cancelTitle = buttons.getString("cancelAddScout");
+        firstNameTitle = labels.getString("firstName");
+        lastNameTitle = labels.getString("lastName");
+        middleTitle = labels.getString("middle");
+        dobTitle = labels.getString("dateOfBirth");
+        phoneTitle = labels.getString("phone");
+        emailTitle = labels.getString("email");
+        title = titles.getString("mainTitleAddScout");
+        alertTitle = alerts.getString("AddScoutTitle");
+        alertSubTitle = alerts.getString("AddScoutSubTitle");
+        alertBody = alerts.getString("AddScoutBody");
+        alertTitleSucceeded = alerts.getString("AddScoutTitleSucceeded");
+        alertSubTitleSucceeded = alerts.getString("AddScoutSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("AddScoutBodySucceeded");
+    }
 
-            title = titles.getString("mainTitleScout");
 
-            alertTitle = alerts.getString("AddScoutTitle");
-            alertSubTitle = alerts.getString("AddScoutSubTitle");
-            alertBody = alerts.getString("AddScoutBody");
-	}
+    protected void populateFields()
+    {
+        firstNameField.setText("");
+        lastNameField.setText("");
+        middleInitialField.setText("");
+        dobField.setText("");
+        phoneNumField.setText("");
+        emailField.setText("");
 
-        public void displayErrorMessage(String message)
-	{
-            statusLog.displayErrorMessage(message);
-	}
+    }
 
-        public void updateState(String key, Object value)
-	{
-            if (key.equals("AddScoutViewError") == true)
-            {
-		displayErrorMessage((String)value);
-            }
-	}
+    @Override
+    public void updateState(String key, Object value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-        public void clearErrorMessage()
-	{
-            statusLog.clearErrorMessage();
-	}
+
 }

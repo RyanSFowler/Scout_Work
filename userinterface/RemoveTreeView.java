@@ -13,6 +13,7 @@ import java.util.prefs.Preferences;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -55,6 +56,10 @@ public class RemoveTreeView extends View {
         private String alertTitle;
         private String alertSubTitle;
         private String alertBody;
+        
+        private String alertTitleSucceeded;
+        private String alertSubTitleSucceeded;
+        private String alertBodySucceeded;
         
         public RemoveTreeView(IModel book)
     {
@@ -136,6 +141,7 @@ public class RemoveTreeView extends View {
          private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
 	{
             Label Author = new Label(label);
+            GridPane.setHalignment(Author, HPos.RIGHT);
             grid.add(Author, 0, pos);
             textfield = new TextField();
             grid.add(textfield, 1, pos);
@@ -187,7 +193,11 @@ public class RemoveTreeView extends View {
                 try
                 {
                     myModel.stateChangeRequest("RemoveTree", props);
-                    System.out.print("Remove Tree");
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(alertTitleSucceeded);
+                    alert.setHeaderText(alertSubTitleSucceeded);
+                    alert.setContentText(alertBodySucceeded);
+                    alert.showAndWait();
                     populateFields();
                 }
                 catch (Exception ex)
@@ -199,13 +209,16 @@ public class RemoveTreeView extends View {
           
         private void refreshFormContents()
         {
-            submitTitle = buttons.getString("submitTree");
+            submitTitle = buttons.getString("submitDeleteTree");
             cancelTitle = buttons.getString("cancelTree");
             barcodeTitle = labels.getString("barcodeTree");
             title = titles.getString("mainTitleRemoveTree");
             alertTitle = alerts.getString("AddTreeTitle");
             alertSubTitle = alerts.getString("AddTreeSubTitle");
             alertBody = alerts.getString("DeleteTreeBody");
+            alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
+            alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
+            alertBodySucceeded = alerts.getString("DeleteTreeBodySucceeded");
         }
           
         public void displayMessage(String message)

@@ -6,72 +6,121 @@ import java.util.Vector;
 import javafx.beans.property.SimpleStringProperty;
 
 //==============================================================================
-public class BookTableModel
+public class ScoutTableModel
 {
-	private final SimpleStringProperty bookId;
-	private final SimpleStringProperty author;
-	private final SimpleStringProperty title;
-	private final SimpleStringProperty pubYear;
+	private final SimpleStringProperty scoutId;
+	private final SimpleStringProperty firstName;
+	private final SimpleStringProperty middleInitial;
+	private final SimpleStringProperty lastName;
+	private final SimpleStringProperty dob;
+  private final SimpleStringProperty phoneNumber;
+  private final SimpleStringProperty email;
 	private final SimpleStringProperty status;
+	private final SimpleStringProperty date;
+
 
 	//----------------------------------------------------------------------------
-	public BookTableModel(Vector<String> bookData)
+	public ScoutTableModel(Vector<String> scoutData)
 	{
-		bookId =  new SimpleStringProperty(bookData.elementAt(0));
-		author =  new SimpleStringProperty(bookData.elementAt(1));
-		title =  new SimpleStringProperty(bookData.elementAt(2));
-		pubYear =  new SimpleStringProperty(bookData.elementAt(3));
-		status =  new SimpleStringProperty(bookData.elementAt(4));
+		scoutId =  new SimpleStringProperty(scoutData.elementAt(0));
+		firstName =  new SimpleStringProperty(scoutData.elementAt(1));
+		middleInitial =  new SimpleStringProperty(scoutData.elementAt(2));
+		lastName =  new SimpleStringProperty(scoutData.elementAt(3));
+		dob =  new SimpleStringProperty(scoutData.elementAt(4));
+    phoneNumber =  new SimpleStringProperty(scoutData.elementAt(5));
+    email =  new SimpleStringProperty(scoutData.elementAt(6));
+		status =  new SimpleStringProperty(scoutData.elementAt(7));
+		date =  new SimpleStringProperty(scoutData.elementAt(8));
 	}
 
 	//----------------------------------------------------------------------------
-	public String getBookId() {
-        return bookId.get();
+	public String getScoutId() {
+        return scoutId.get();
     }
 
 	//----------------------------------------------------------------------------
-    public void setBookID(String number) {
-        bookId.set(number);
+  public void setScoutID(String number)
+	{
+      scoutId.set(number);
+  }
+	//----------------------------------------------------------------------------
+	public String getStatus()
+	{
+			return status.get();
+	}
+	//----------------------------------------------------------------------------
+	public void setStatus(String number)
+	{
+			status.set(number);
+	}
+	//----------------------------------------------------------------------------
+		public String getDate()
+		{
+			 return date.get();
+		}
+
+	//----------------------------------------------------------------------------
+		public void setDate(String number)
+		{
+				date.set(number);
+		}
+
+    //----------------------------------------------------------------------------
+    public String getFirstName() {
+        return firstName.get();
     }
 
     //----------------------------------------------------------------------------
-    public String getAuthor() {
-        return author.get();
+    public void setFirstName(String aType) {
+        firstName.set(aType);
     }
 
     //----------------------------------------------------------------------------
-    public void setAuthor(String aType) {
-        author.set(aType);
+    public String getMiddleInitial() {
+        return middleInitial.get();
     }
 
     //----------------------------------------------------------------------------
-    public String getTitle() {
-        return title.get();
+    public void setMiddleInitial(String aTitle) {
+        middleInitial.set(aTitle);
     }
 
     //----------------------------------------------------------------------------
-    public void setTitle(String aTitle) {
-        title.set(aTitle);
-    }
-    
-    //----------------------------------------------------------------------------
-    public String getPubYear() {
-        return pubYear.get();
+    public String getLastName() {
+        return lastName.get();
     }
 
     //----------------------------------------------------------------------------
-    public void setPubYear(String year)
+    public void setLastName(String year)
     {
-    	pubYear.set(year);
+    	lastName.set(year);
     }
     //----------------------------------------------------------------------------
-    public String getStatus(){
-    	return status.get();
-    	
+    public String getDob(){
+    	return dob.get();
+
     }
     //----------------------------------------------------------------------------
-    public void setStatus(String aStatus){
-    	status.set(aStatus);
+    public void setDob(String aStatus){
+    	dob.set(aStatus);
     }
-    
+    //----------------------------------------------------------------------------
+    public String getPhoneNumber(){
+    	return phoneNumber.get();
+
+    }
+    //----------------------------------------------------------------------------
+    public void setPhoneNumber(String aStatus){
+    	phoneNumber.set(aStatus);
+    }
+    //----------------------------------------------------------------------------
+    public String getEmail(){
+    	return email.get();
+
+    }
+    //----------------------------------------------------------------------------
+    public void setEmail(String aStatus){
+    	email.set(aStatus);
+    }
+
 }

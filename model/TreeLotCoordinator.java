@@ -100,7 +100,6 @@ public class TreeLotCoordinator implements IView, IModel
 		else*/
 			return "";
 	}
-
 	//----------------------------------------------------------------
 	public void stateChangeRequest(String key, Object value)
 	{
@@ -202,7 +201,7 @@ public class TreeLotCoordinator implements IView, IModel
 			currentScene.getStylesheets().add("styleSheet.css");
 			myViews.put("TreeLotCoordinatorView", currentScene);
 		}
-				
+
 		swapToView(currentScene);
 	}
 
@@ -228,7 +227,7 @@ public class TreeLotCoordinator implements IView, IModel
 	//-----------------------------------------------------------------------------
 	public void swapToView(Scene newScene)
 	{
-		
+
 		if (newScene == null)
 		{
 			System.out.println("TreeLotCoordinator.swapToView(): Missing view for display");
@@ -239,8 +238,8 @@ public class TreeLotCoordinator implements IView, IModel
 
 		myStage.setScene(newScene);
 		myStage.sizeToScene();
-		
-			
+
+
 		//Place in center
 		WindowPosition.placeCenter(myStage);
 
@@ -251,4 +250,3 @@ public class TreeLotCoordinator implements IView, IModel
 	}
 
 }
-

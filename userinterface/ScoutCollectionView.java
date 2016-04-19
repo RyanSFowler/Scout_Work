@@ -31,77 +31,200 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import java.util.ResourceBundle;
+import java.util.Locale;
+import java.util.prefs.Preferences;
+import userinterface.EnterModifyScoutView;
 
 import java.util.Vector;
 import java.util.Enumeration;
 
 // project imports
 import impresario.IModel;
-import model.Book;
-import model.BookCollection;
-import model.Librarian;
+import model.Scout;
+import model.ScoutCollection;
+import model.TreeLotCoordinator;
 //==============================================================================
-public class BookCollectionView extends View
+public class ScoutCollectionView extends View
 {
-	protected TableView<BookTableModel> tableOfBooks;
+	protected TableView<ScoutTableModel> tableOfScouts;
 	protected Button cancelButton;
-	protected Button doneButton;
-	private BookCollection myBc;
+	protected Button selectScoutButton;
+	private ScoutCollection mySc;
 	protected MessageView statusLog;
+	private String title;
+	private String cancelTitle;
+	private String submitTitle;
+	private Locale locale = new Locale("en", "CA");
+	private ResourceBundle buttons;
+	private ResourceBundle titles;
+	private ResourceBundle labels;
+	private ResourceBundle alerts;
+	private Scout scout;
+	private TreeLotCoordinator myTLC;
 
 
 	//--------------------------------------------------------------------------
-	public BookCollectionView(BookCollection bc)
+	public ScoutCollectionView(ScoutCollection sc)
 	{
-		super(bc, "BookCollectionView");
-		myBc = bc;
-		// create a container for showing the contents
-		VBox container = new VBox(10);
-		container.setPadding(new Insets(15, 5, 5, 5));
-		
+		super(sc, "ScoutCollectionView");
+		mySc = sc;
 
-		// create our GUI components, add them to this panel
-		container.getChildren().add(createTitle());
-		container.getChildren().add(createFormContent());
+		Preferences prefs = Preferences.userNodeForPackage(ScoutCollectionView.class);
+		String langage = prefs.get("langage", null);
+		// create a container for showing the content
 
-		// Error message area
-		container.getChildren().add(createStatusLog("                                            "));
+		if (langage.toString().equals("en") == true)
+		{
+				locale = new Locale("en", "US");
+		}
+		else if (langage.toString().equals("fr") == true)
+		{
+				locale = new Locale("fr", "CA");
+		}
+		buttons = ResourceBundle.getBundle("ButtonsBundle", locale);
+		titles = ResourceBundle.getBundle("TitlesBundle", locale);
+		labels = ResourceBundle.getBundle("LabelsBundle", locale);
+		alerts = ResourceBundle.getBundle("AlertsBundle", locale);
+		refreshFormContents();
+		displayWindow();
 
-		getChildren().add(container);
-		
-		populateFields();
 	}
+	private void refreshFormContents()
+	{
 
+			submitTitle = buttons.getString("submitModifyScout");
+			cancelTitle = buttons.getString("cancelAddScout");
+			title = titles.getString("mainTitleModifyScout");//change
+	}
+	public void displayWindow()
+	{
+			VBox container = new VBox(10);
+			container.setAlignment(Pos.CENTER);
+			container.setPadding(new Insets(15, 5, 5, 5));
+
+			container.getChildren().add(createTitle());
+			container.getChildren().add(createFormContent());
+
+			//container.getChildren().add(createStatusLog("                                            "));
+			getChildren().add(container);
+			populateFields();
+			myModel.subscribe("LoginError", this);
+	}
 	//--------------------------------------------------------------------------
 	protected void populateFields()
 	{
 		getEntryTableModelValues();
 	}
+	private Button createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
+	{
+			button = new Button(nameButton);
+			button.setId(Integer.toString(id));
+			button.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+							public void handle(ActionEvent e) {
+									processAction(e);
+							}
+					});
 
+			//grid.add(btnContainer, pos1, pos2);
+			return button;
+	}
+	public void modifyScout()
+	{
+		scout.createModifyScoutView();
+	}
+	protected void processScoutSelected()
+	{
+		ScoutTableModel selectedItem = tableOfScouts.getSelectionModel().getSelectedItem();
+
+		if(selectedItem != null)
+		{
+			String selectedScoutId = selectedItem.getScoutId();
+
+			myModel.stateChangeRequest("ModifyScout", selectedScoutId);
+		}
+	}
+	public void mouseClicked(MouseEvent click)
+	{
+		if(click.getClickCount() >= 2)
+		{
+			processScoutSelected();
+		}
+	}
+	//-------------------------------------------------------------------------------
+	public void processAction(Event evt)
+	{
+			Object source = evt.getSource();
+			Button clickedBtn = (Button) source;
+			if (clickedBtn.getId().equals("1") == true)
+			{
+					processScoutSelected();
+			}
+			else if (clickedBtn.getId().equals("2") == true)
+			{
+					myModel.stateChangeRequest("Done", null);
+			}
+					/*
+					if ((firstNameField.getText().isEmpty() == true) || (lastNameField.getText().isEmpty() == true)
+							 || (dobField.getText().isEmpty() == true) || (phoneNumField.getText().isEmpty() == true) || (emailField.getText().isEmpty() == true))
+					{
+							Alert alert = new Alert(Alert.AlertType.INFORMATION);
+							alert.setTitle(alertTitle);
+							alert.setHeaderText(alertSubTitle);
+							alert.setContentText(alertBody);
+							alert.showAndWait();
+					}
+					else
+					{
+							Properties props = new Properties();
+							props.setProperty("FirstName", firstNameField.getText());
+							props.setProperty("MiddleInitial", mI);
+							props.setProperty("LastName", lastNameField.getText());
+							props.setProperty("DateOfBirth", dobField.getText());
+							props.setProperty("PhoneNumber", phoneNumField.getText());
+							props.setProperty("Email", emailField.getText());
+							props.setProperty("Status", "Active");
+							try
+							{
+									myModel.stateChangeRequest("ModifyScout", props);
+									Alert alert = new Alert(Alert.AlertType.INFORMATION);
+									alert.setTitle(alertTitleSucceeded);
+									alert.setHeaderText(alertSubTitleSucceeded);
+									alert.setContentText(alertBodySucceeded);
+									alert.showAndWait();
+									populateFields();
+							}
+							catch (Exception ex)
+							{
+									System.out.print("Error New Scout Modify");
+							}
+					}*/
+			}
 	//--------------------------------------------------------------------------
 	protected void getEntryTableModelValues()
 	{
-		
-		ObservableList<BookTableModel> tableData = FXCollections.observableArrayList();
+
+		ObservableList<ScoutTableModel> tableData = FXCollections.observableArrayList();
 		try
 		{
-			BookCollection bookCollection = (BookCollection)myModel.getState("BookList");
+			ScoutCollection scoutCollection = (ScoutCollection)myModel.getState("ScoutList");
 
-	 		Vector entryList = (Vector)bookCollection.getState("Books");
+	 		Vector entryList = (Vector)scoutCollection.getState("Scout");
 			Enumeration entries = entryList.elements();
 
 			while (entries.hasMoreElements() == true)
 			{
-				Book nextBook = (Book)entries.nextElement();
-				Vector<String> view = nextBook.getEntryListView();
+				Scout nextScout = (Scout)entries.nextElement();
+				Vector<String> view = nextScout.getEntryListView();
 
 				// add this list entry to the list
-				BookTableModel nextTableRowData = new BookTableModel(view);
+				ScoutTableModel nextTableRowData = new ScoutTableModel(view);
 				tableData.add(nextTableRowData);
-				
+
 			}
-			
-			tableOfBooks.setItems(tableData);
+
+			tableOfScouts.setItems(tableData);
 		}
 		catch (Exception e) {//SQLException e) {
 			// Need to handle this exception
@@ -110,103 +233,128 @@ public class BookCollectionView extends View
 
 	// Create the title container
 	//-------------------------------------------------------------
-	private Node createTitle()
+	public Node createTitle()
 	{
-		HBox container = new HBox();
-		container.setAlignment(Pos.CENTER);	
-
-		Text titleText = new Text(" LIBRARY SYSTEM ");
-		titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-		titleText.setWrappingWidth(300);
-		titleText.setTextAlignment(TextAlignment.CENTER);
-		titleText.setFill(Color.DARKGREEN);
-		container.getChildren().add(titleText);
-		
-		return container;
+			HBox container = new HBox();
+			container.setAlignment(Pos.CENTER);
+			Text titleText = new Text(title);
+			titleText.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+			titleText.setWrappingWidth(300);
+			titleText.setTextAlignment(TextAlignment.CENTER);
+			titleText.setFill(Color.DARKGREEN);
+			container.getChildren().add(titleText);
+			return container;
 	}
 
 	// Create the main form content
 	//-------------------------------------------------------------
 	private VBox createFormContent()
 	{
-		VBox vbox = new VBox(10);
 
+		VBox vbox = new VBox(10);
 		GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
        	grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        
-        Text prompt = new Text("LIST OF BOOKS");
-        prompt.setFont(Font.font("Arial", FontWeight.BOLD, 15));
-        prompt.setWrappingWidth(350);
-        prompt.setTextAlignment(TextAlignment.CENTER);
-        prompt.setFill(Color.BLACK);
-        grid.add(prompt, 0, 0, 2, 1);
 
-		tableOfBooks = new TableView<BookTableModel>();
-		tableOfBooks.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-	
-		TableColumn bookIDColumn = new TableColumn("BookId") ;
-		bookIDColumn.setMinWidth(100);
-		bookIDColumn.setCellValueFactory(
-	                new PropertyValueFactory<BookTableModel, String>("bookId"));
-		
-		TableColumn authorColumn = new TableColumn("Author") ;
-		authorColumn.setMinWidth(100);
-		authorColumn.setCellValueFactory(
-	                new PropertyValueFactory<BookTableModel, String>("author"));
-		  
-		TableColumn titleColumn = new TableColumn("Title") ;
-		titleColumn.setMinWidth(100);
-		titleColumn.setCellValueFactory(
-	                new PropertyValueFactory<BookTableModel, String>("title"));
-		
-		TableColumn pubYearColumn = new TableColumn("Publication Year") ;
-		pubYearColumn.setMinWidth(100);
-		pubYearColumn.setCellValueFactory(
-	                new PropertyValueFactory<BookTableModel, String>("pubYear"));
-		
-		TableColumn statusColumn = new TableColumn("Status") ;
+		tableOfScouts = new TableView<ScoutTableModel>();
+		tableOfScouts.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+		TableColumn scoutIDColumn = new TableColumn("scoutId") ;
+		scoutIDColumn.setMinWidth(100);
+		scoutIDColumn.setCellValueFactory(
+	                new PropertyValueFactory<ScoutTableModel, String>("ScoutId"));
+
+		TableColumn firstNameColumn = new TableColumn("firstName") ;
+		firstNameColumn.setMinWidth(100);
+		firstNameColumn.setCellValueFactory(
+	                new PropertyValueFactory<ScoutTableModel, String>("FirstName"));
+
+		TableColumn middleInitialColumn = new TableColumn("middleInitial") ;
+		middleInitialColumn.setMinWidth(100);
+		middleInitialColumn.setCellValueFactory(
+	                new PropertyValueFactory<ScoutTableModel, String>("MiddleInitial"));
+
+		TableColumn lastNameColumn = new TableColumn("lastName") ;
+		lastNameColumn.setMinWidth(100);
+		lastNameColumn.setCellValueFactory(
+	                new PropertyValueFactory<ScoutTableModel, String>("LastName"));
+
+		TableColumn dateOfBirthColumn = new TableColumn("dateOfBirth") ;
+		dateOfBirthColumn.setMinWidth(100);
+		dateOfBirthColumn.setCellValueFactory(
+	                new PropertyValueFactory<ScoutTableModel, String>("DateOfBirth"));
+
+	  TableColumn phoneNumberColumn = new TableColumn("phoneNumber") ;
+	  phoneNumberColumn.setMinWidth(100);
+		phoneNumberColumn.setCellValueFactory(
+		    					new PropertyValueFactory<ScoutTableModel, String>("PhoneNumber"));
+
+		TableColumn emailColumn = new TableColumn("email") ;
+		emailColumn.setMinWidth(100);
+		emailColumn.setCellValueFactory(
+		              new PropertyValueFactory<ScoutTableModel, String>("Email"));
+
+		TableColumn statusColumn = new TableColumn("status") ;
 		statusColumn.setMinWidth(100);
 		statusColumn.setCellValueFactory(
-	                new PropertyValueFactory<BookTableModel, String>("status"));
-		
+									new PropertyValueFactory<ScoutTableModel, String>("Status"));
 
-		tableOfBooks.getColumns().addAll(bookIDColumn, 
-				authorColumn, titleColumn, pubYearColumn, statusColumn);
+		TableColumn dateStatusUpdatedColumn = new TableColumn("dateStatusUpdated") ;
+		dateStatusUpdatedColumn.setMinWidth(100);
+		dateStatusUpdatedColumn.setCellValueFactory(
+									new PropertyValueFactory<ScoutTableModel, String>("DateStatusUpdated"));
 
-		
-		ScrollPane scrollPane = new ScrollPane();
-		scrollPane.setPrefSize(115, 150); //original values 115 150
-		
-		scrollPane.setContent(tableOfBooks);
+		tableOfScouts.getColumns().setAll(scoutIDColumn,
+				firstNameColumn, lastNameColumn, middleInitialColumn, dateOfBirthColumn, phoneNumberColumn, emailColumn, statusColumn, dateStatusUpdatedColumn);
 
-		doneButton = new Button("Done");
- 		doneButton.setOnAction(new EventHandler<ActionEvent>() {
-
-       		     @Override
-       		     public void handle(ActionEvent e) {
-       		     	myBc.done();
-					
-            	 }
-        	});
-
-		
+		tableOfScouts.setOnMousePressed(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event)
+					{
+						if (event.getClickCount() >=2 ){
+							processScoutSelected();
+						}
+					}
+				});
 
 		HBox btnContainer = new HBox(100);
 		btnContainer.setAlignment(Pos.CENTER);
-		btnContainer.getChildren().add(doneButton);
-		
-		
+		cancelButton = createButton(grid, cancelButton, cancelTitle, 0, 4, 2);
+		selectScoutButton = createButton(grid, selectScoutButton, submitTitle, 1, 4, 1);
+
+
+		btnContainer.getChildren().add(cancelButton);
+		btnContainer.getChildren().add(selectScoutButton);
+
 		vbox.getChildren().add(grid);
-		vbox.getChildren().add(scrollPane);
+		//vbox.getChildren().add(scrollPane);
+		vbox.getChildren().add(createScrollPane(grid, tableOfScouts,0));
 		vbox.getChildren().add(btnContainer);
-	
+		/*
+		createScrollPane(grid, tableOfScouts,0);
+		createButton(grid, selectScoutButton, submitTitle, 1, 4, 1);
+		createButton(grid, cancelButton, cancelTitle, 0, 4, 2);
+		*/
+
+
 		return vbox;
 	}
+	private ScrollPane createScrollPane(GridPane grid,TableView<ScoutTableModel> tableOfScouts, int pos )
+	{
+	/*	ObservableList<Scout> modifyList = tableOfScouts;
+ 		tableOfScouts.setItems(modifyList);
+*/
+		ScrollPane scrollPane = new ScrollPane();
+		scrollPane.setPrefSize(400, 300); //original values 115 150
+		System.out.println(tableOfScouts);
+		scrollPane.setContent(tableOfScouts);
+		return scrollPane;
 
-	
+	}
+
+
 
 	//--------------------------------------------------------------------------
 	public void updateState(String key, Object value)
@@ -214,7 +362,7 @@ public class BookCollectionView extends View
 	}
 
 	//--------------------------------------------------------------------------
-	
+
 
 	//--------------------------------------------------------------------------
 	protected MessageView createStatusLog(String initialMessage)
@@ -252,5 +400,5 @@ public class BookCollectionView extends View
 		}
 	}
    */
-	
+
 }
