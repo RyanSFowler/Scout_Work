@@ -34,13 +34,14 @@ import javafx.stage.Stage;
 import java.util.ResourceBundle;
 import java.util.Locale;
 import java.util.prefs.Preferences;
-import userinterface.EnterModifyScoutView;
+//import userinterface.EnterModifyScoutView;
 
 import java.util.Vector;
 import java.util.Enumeration;
 
 // project imports
 import impresario.IModel;
+import java.util.Properties;
 import model.Scout;
 import model.ScoutCollection;
 import model.TreeLotCoordinator;
@@ -61,7 +62,6 @@ public class ScoutCollectionView extends View
 	private ResourceBundle labels;
 	private ResourceBundle alerts;
 	private Scout scout;
-	private TreeLotCoordinator myTLC;
 
 
 	//--------------------------------------------------------------------------
@@ -69,7 +69,6 @@ public class ScoutCollectionView extends View
 	{
 		super(sc, "ScoutCollectionView");
 		mySc = sc;
-
 		Preferences prefs = Preferences.userNodeForPackage(ScoutCollectionView.class);
 		String langage = prefs.get("langage", null);
 		// create a container for showing the content
@@ -88,6 +87,7 @@ public class ScoutCollectionView extends View
 		alerts = ResourceBundle.getBundle("AlertsBundle", locale);
 		refreshFormContents();
 		displayWindow();
+                
 
 	}
 	private void refreshFormContents()
@@ -130,42 +130,28 @@ public class ScoutCollectionView extends View
 			//grid.add(btnContainer, pos1, pos2);
 			return button;
 	}
-	public void modifyScout()
-	{
-		scout.createModifyScoutView();
-	}
-	protected void processScoutSelected()
-	{
-		ScoutTableModel selectedItem = tableOfScouts.getSelectionModel().getSelectedItem();
-
-		if(selectedItem != null)
-		{
-			String selectedScoutId = selectedItem.getScoutId();
-
-			myModel.stateChangeRequest("ModifyScout", selectedScoutId);
-		}
-	}
-	public void mouseClicked(MouseEvent click)
-	{
-		if(click.getClickCount() >= 2)
-		{
-			processScoutSelected();
-		}
-	}
 	//-------------------------------------------------------------------------------
 	public void processAction(Event evt)
 	{
+		Object source = evt.getSource();
+		Button clickedBtn = (Button) source;
+		if (clickedBtn.getId().equals("2") == true)
+		{
+				myModel.stateChangeRequest("Done", null);
+		}
+			/*String mI;
 			Object source = evt.getSource();
 			Button clickedBtn = (Button) source;
 			if (clickedBtn.getId().equals("1") == true)
 			{
-					processScoutSelected();
-			}
-			else if (clickedBtn.getId().equals("2") == true)
-			{
-					myModel.stateChangeRequest("Done", null);
-			}
-					/*
+					if(middleInitialField.getText().isEmpty() == true)
+					{
+						mI="";
+					}
+					else
+					{
+						mI = middleInitialField.getText();
+					}
 					if ((firstNameField.getText().isEmpty() == true) || (lastNameField.getText().isEmpty() == true)
 							 || (dobField.getText().isEmpty() == true) || (phoneNumField.getText().isEmpty() == true) || (emailField.getText().isEmpty() == true))
 					{
@@ -210,17 +196,17 @@ public class ScoutCollectionView extends View
 		{
 			ScoutCollection scoutCollection = (ScoutCollection)myModel.getState("ScoutList");
 
-	 		Vector entryList = (Vector)scoutCollection.getState("Scout");
+	 		Vector entryList = (Vector)scoutCollection.getState("Scouts");
 			Enumeration entries = entryList.elements();
 
 			while (entries.hasMoreElements() == true)
 			{
 				Scout nextScout = (Scout)entries.nextElement();
-				Vector<String> view = nextScout.getEntryListView();
+				//Vector<String> view = nextScout.getEntryListView();
 
 				// add this list entry to the list
-				ScoutTableModel nextTableRowData = new ScoutTableModel(view);
-				tableData.add(nextTableRowData);
+				//ScoutTableModel nextTableRowData = new ScoutTableModel(view);
+				//tableData.add(nextTableRowData);
 
 			}
 
@@ -251,85 +237,102 @@ public class ScoutCollectionView extends View
 	private VBox createFormContent()
 	{
 
-		VBox vbox = new VBox(10);
-		GridPane grid = new GridPane();
+	VBox vbox = new VBox(10);
+	GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
        	grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-		tableOfScouts = new TableView<ScoutTableModel>();
-		tableOfScouts.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+	tableOfScouts = new TableView<ScoutTableModel>();
+	tableOfScouts.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-		TableColumn scoutIDColumn = new TableColumn("scoutId") ;
-		scoutIDColumn.setMinWidth(100);
-		scoutIDColumn.setCellValueFactory(
-	                new PropertyValueFactory<ScoutTableModel, String>("ScoutId"));
+	TableColumn scoutIDColumn = new TableColumn("scoutId") ;
+	scoutIDColumn.setMinWidth(100);
+	scoutIDColumn.setCellValueFactory(
+            new PropertyValueFactory<ScoutTableModel, String>("ScoutId"));
 
-		TableColumn firstNameColumn = new TableColumn("firstName") ;
-		firstNameColumn.setMinWidth(100);
-		firstNameColumn.setCellValueFactory(
-	                new PropertyValueFactory<ScoutTableModel, String>("FirstName"));
+	TableColumn firstNameColumn = new TableColumn("firstName") ;
+	firstNameColumn.setMinWidth(100);
+	firstNameColumn.setCellValueFactory(
+	    new PropertyValueFactory<ScoutTableModel, String>("FirstName"));
 
-		TableColumn middleInitialColumn = new TableColumn("middleInitial") ;
-		middleInitialColumn.setMinWidth(100);
-		middleInitialColumn.setCellValueFactory(
-	                new PropertyValueFactory<ScoutTableModel, String>("MiddleInitial"));
+	TableColumn middleInitialColumn = new TableColumn("middleInitial") ;
+	middleInitialColumn.setMinWidth(100);
+	middleInitialColumn.setCellValueFactory(
+	    new PropertyValueFactory<ScoutTableModel, String>("MiddleInitial"));
 
-		TableColumn lastNameColumn = new TableColumn("lastName") ;
-		lastNameColumn.setMinWidth(100);
-		lastNameColumn.setCellValueFactory(
-	                new PropertyValueFactory<ScoutTableModel, String>("LastName"));
+	TableColumn lastNameColumn = new TableColumn("lastName") ;
+	lastNameColumn.setMinWidth(100);
+	lastNameColumn.setCellValueFactory(
+	    new PropertyValueFactory<ScoutTableModel, String>("LastName"));
 
-		TableColumn dateOfBirthColumn = new TableColumn("dateOfBirth") ;
-		dateOfBirthColumn.setMinWidth(100);
-		dateOfBirthColumn.setCellValueFactory(
-	                new PropertyValueFactory<ScoutTableModel, String>("DateOfBirth"));
+	TableColumn dateOfBirthColumn = new TableColumn("dateOfBirth") ;
+	dateOfBirthColumn.setMinWidth(100);
+	dateOfBirthColumn.setCellValueFactory(
+	    new PropertyValueFactory<ScoutTableModel, String>("DateOfBirth"));
 
-	  TableColumn phoneNumberColumn = new TableColumn("phoneNumber") ;
-	  phoneNumberColumn.setMinWidth(100);
-		phoneNumberColumn.setCellValueFactory(
-		    					new PropertyValueFactory<ScoutTableModel, String>("PhoneNumber"));
+	TableColumn phoneNumberColumn = new TableColumn("phoneNumber") ;
+	phoneNumberColumn.setMinWidth(100);
+	phoneNumberColumn.setCellValueFactory(
+            new PropertyValueFactory<ScoutTableModel, String>("PhoneNumber"));
 
-		TableColumn emailColumn = new TableColumn("email") ;
-		emailColumn.setMinWidth(100);
-		emailColumn.setCellValueFactory(
-		              new PropertyValueFactory<ScoutTableModel, String>("Email"));
+        TableColumn emailColumn = new TableColumn("email") ;
+	emailColumn.setMinWidth(100);
+	emailColumn.setCellValueFactory(
+            new PropertyValueFactory<ScoutTableModel, String>("Email"));
 
-		TableColumn statusColumn = new TableColumn("status") ;
-		statusColumn.setMinWidth(100);
-		statusColumn.setCellValueFactory(
-									new PropertyValueFactory<ScoutTableModel, String>("Status"));
+	TableColumn statusColumn = new TableColumn("status") ;
+	statusColumn.setMinWidth(100);
+	statusColumn.setCellValueFactory(
+            new PropertyValueFactory<ScoutTableModel, String>("Status"));
 
-		TableColumn dateStatusUpdatedColumn = new TableColumn("dateStatusUpdated") ;
-		dateStatusUpdatedColumn.setMinWidth(100);
-		dateStatusUpdatedColumn.setCellValueFactory(
-									new PropertyValueFactory<ScoutTableModel, String>("DateStatusUpdated"));
+	TableColumn dateStatusUpdatedColumn = new TableColumn("dateStatusUpdated") ;
+	dateStatusUpdatedColumn.setMinWidth(100);
+	dateStatusUpdatedColumn.setCellValueFactory(
+            new PropertyValueFactory<ScoutTableModel, String>("DateStatusUpdated"));
 
-		tableOfScouts.getColumns().setAll(scoutIDColumn,
-				firstNameColumn, lastNameColumn, middleInitialColumn, dateOfBirthColumn, phoneNumberColumn, emailColumn, statusColumn, dateStatusUpdatedColumn);
+	tableOfScouts.getColumns().addAll(scoutIDColumn,
+            firstNameColumn, lastNameColumn, middleInitialColumn, dateOfBirthColumn, phoneNumberColumn, emailColumn, statusColumn, dateStatusUpdatedColumn);
 
-		tableOfScouts.setOnMousePressed(new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event)
-					{
-						if (event.getClickCount() >=2 ){
-							processScoutSelected();
-						}
-					}
-				});
 
-		HBox btnContainer = new HBox(100);
-		btnContainer.setAlignment(Pos.CENTER);
-		cancelButton = createButton(grid, cancelButton, cancelTitle, 0, 4, 2);
-		selectScoutButton = createButton(grid, selectScoutButton, submitTitle, 1, 4, 1);
+	HBox btnContainer = new HBox(100);
+	btnContainer.setAlignment(Pos.CENTER);
+	cancelButton = createButton(grid, cancelButton, cancelTitle, 0, 4, 2);
+	selectScoutButton = createButton(grid, selectScoutButton, submitTitle, 1, 4, 1);
+	cancelButton.setOnAction(new EventHandler<ActionEvent>() {
 
+       		     @Override
+       		     public void handle(ActionEvent e) {
+       		     		//mySc.modifyDone();
+
+            	 }
+        	});
+		selectScoutButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			       		     @Override
+			       		     public void handle(ActionEvent e) {
+                                                 Properties props = new Properties();
+
+                                                props.setProperty("FirstName", "Antoine");
+                                                props.setProperty("LastName", "Berghen");
+                                                try{
+                                                myModel.stateChangeRequest("SearchScout", props);
+                                                populateFields();
+                                                }
+                                                catch (Exception ex)
+                                                 {
+                                                       //displayErrorMessage("Error to searching Book in database!");
+                                                    }
+			       		     	//myBc.done();
+
+			      	 }
+			    });
 
 		btnContainer.getChildren().add(cancelButton);
 		btnContainer.getChildren().add(selectScoutButton);
 
 		vbox.getChildren().add(grid);
-		//vbox.getChildren().add(scrollPane);
 		vbox.getChildren().add(createScrollPane(grid, tableOfScouts,0));
 		vbox.getChildren().add(btnContainer);
 		/*

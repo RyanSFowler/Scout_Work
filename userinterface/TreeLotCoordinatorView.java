@@ -110,11 +110,38 @@ public class TreeLotCoordinatorView extends View
 		setVisibility("treeType", false);
 		setVisibility("sales", false);
 
+                autoInternalization();
 		//populateFields();
 
 		// STEP 0: Be sure you tell your model what keys you are interested in
 		myModel.subscribe("LoginError", this);
 	}
+        
+        private void autoInternalization()
+        {
+            if (System.getProperty("user.language").equals("fr") == true)
+            {
+                locale = new Locale("fr", "CA");
+                frenchButton.setOpacity(1.0);
+                englishButton.setOpacity(0.3);
+                buttons = ResourceBundle.getBundle("ButtonsBundle", locale);
+                titles = ResourceBundle.getBundle("TitlesBundle", locale);
+                prefs = Preferences.userNodeForPackage(TreeLotCoordinatorView.class);
+                prefs.put("langage", "fr");
+                refreshFormContents();
+            }
+            else
+            {
+                locale = new Locale("en", "US");
+                englishButton.setOpacity(1.0);
+                frenchButton.setOpacity(0.3);
+                buttons = ResourceBundle.getBundle("ButtonsBundle", locale);
+                titles = ResourceBundle.getBundle("TitlesBundle", locale);
+                prefs = Preferences.userNodeForPackage(TreeLotCoordinatorView.class);
+                prefs.put("langage", "en");
+                refreshFormContents();
+            }
+        }
 
 	// Create the label (Text) for the title of the screen
 	//-------------------------------------------------------------
@@ -265,7 +292,7 @@ public class TreeLotCoordinatorView extends View
        		     public void handle(ActionEvent e) {
        		    	transCategory = "TreeType";
        		     	processOptionAction(e);
-            	     }
+            	 }
         	});
 
  		addTreeTypeButton = new Button("Add Tree Type");
@@ -307,25 +334,27 @@ public class TreeLotCoordinatorView extends View
        		     public void handle(ActionEvent e) {
        		    	transCategory = "Sales";
        		     	processOptionAction(e);
-            	     }
+            	 }
         	});
 
- 		openShiftButton = new Button("Open Shift");
+ 		openShiftButton = new Button("Open Session");
  		openShiftButton.setMaxWidth(Double.MAX_VALUE);
  		openShiftButton.setOnAction(new EventHandler<ActionEvent>() {
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Open";
 	  		     	processAction(e);
 	       	     }
  			});
 
- 		closeShiftButton = new Button("Close Shift");
+ 		closeShiftButton = new Button("Close Session");
  		closeShiftButton.setMaxWidth(Double.MAX_VALUE);
  		closeShiftButton.setOnAction(new EventHandler<ActionEvent>() {
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+	  		    	transType = "Close";
 	  		     	processAction(e);
 	       	     }
  			});

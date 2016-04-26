@@ -1,221 +1,172 @@
-// specify the package
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model;
-
-// system imports
-import database.Persistable;
-import java.util.Hashtable;
+import java.util.Enumeration;
+import impresario.IModel;
+import impresario.IView;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Vector;
-import javafx.stage.Stage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Scene;
-
-// project imports
-import exception.InvalidPrimaryKeyException;
-import event.Event;
-
-import impresario.*;
-
-import userinterface.MainStageContainer;
+import javafx.stage.Stage;
 import userinterface.View;
-import userinterface.WindowPosition;
+import userinterface.ViewFactory;
 
-/** The class containing the Transaction for the ATM application */
-//==============================================================
-abstract public class Transaction extends Persistable implements IView, IModel
-{
 
-	// For Impresario
-	protected Properties dependencies;
-	protected ModelRegistry myRegistry;
+public class Transaction extends EntityBase implements IView, IModel {
 
-	protected Stage myStage;
-	protected Hashtable<String, Scene> myViews;
+     protected Stage myStage;
+     protected TreeLotCoordinator myTreeLotCoordinator;
+     protected Properties dependencies;
+     private static final String myTableName = "TRANSACTIOON";
+     private String updateStatusMessage = "";
 
-        
-	private int referenceCount;		// the number of others using us
-	protected boolean dirty;		// true if the data has changed
-	protected Properties persistentState;	// the field names and values from the database
-	private String myTableName;				// the name of our database table
-        
-        protected Properties mySchema;
-	protected Vector myAccountIDs;
-        
-        protected abstract void initializeSchema(String tableName);
-	// GUI Components
 
-	/**
-	 * Constructor for this class.
-	 *
-	 * Transaction remembers all the account IDs for this customer.
-	 * It uses AccountCatalog to create this list of account IDs.
-	 *
-	 */
-	//----------------------------------------------------------
-	protected Transaction(String tablename) throws Exception
+     public Transaction(TreeLotCoordinator l, String type) throws Exception {
+            super(myTableName);
+            myTreeLotCoordinator = l;
+            persistentState = new Properties();
+            setDependencies();
+            if (type == "Add") {
+                createTransactionView();
+            }
+        }
+        public Transaction(Properties props)
+	      {
+		        super(myTableName);
+
+		        setDependencies();
+		        setData(props);
+	      }
+        //-----------------------------------------------------------------------------------
+	      public void setData(Properties props)
+	      {
+		        persistentState = new Properties();
+		        Enumeration allKeys = props.propertyNames();
+		        while (allKeys.hasMoreElements() == true)
+		        {
+			           String nextKey = (String)allKeys.nextElement();
+			           String nextValue = props.getProperty(nextKey);
+
+			          if (nextValue != null)
+			          {
+				              persistentState.setProperty(nextKey, nextValue);
+			          }
+		        }
+	      }
+        public void createTransactionView() {
+               Scene currentScene = (Scene)myViews.get("TransactionView");
+
+               if (currentScene == null)
+               {
+                   View newView = ViewFactory.createView("TransactionView", this);
+                   currentScene = new Scene(newView);
+                   currentScene.getStylesheets().add("styleSheet.css");
+                   myViews.put("TransactionView", currentScene);
+               }
+               swapToView(currentScene);
+           }
+
+
+     public void setDependencies()
 	{
+            dependencies = new Properties();
+            myRegistry.setDependencies(dependencies);
+	}
 
-		myStage = MainStageContainer.getInstance();
-		myViews = new Hashtable<String, Scene>();
+     public Object getState(String key)
+	{
+            if (key.equals("Transaction"))
+		          return this;
+            return null;
+	}
 
-                myTableName = tablename;
-                System.out.print("Je rentre Transaction3");
-                initializeSchema(myTableName);
-                System.out.print("Je rentre Transaction4");
-                persistentState = new Properties();
-                
-		myRegistry = new ModelRegistry("Transaction");
-		if(myRegistry == null)
-		{
-			new Event(Event.getLeafLevelClassName(this), "Transaction",
-				"Could not instantiate Registry", Event.ERROR);
-		}
-		setDependencies();
-                
-                referenceCount = 0;
-                dirty = false;
+     public void stateChangeRequest(String key, Object value)
+	{
+            if (key.equals("Done") == true)
+            {
+                myTreeLotCoordinator.createAndShowTreeLotCoordinatorView();
+
+            }
+            else if (key.equals("Add") == true)
+            {
+                if (value != null)
+                {
+                    persistentState = (Properties) value;
+                    insert();
+                }
+            }
+
+            /*else if (key.equals("RemoveScout") == true)
+            {
+                if (value != null)
+                {
+                    persistentState = (Properties) value;
+                    RemoveScoutInDatabase();
+                }
+            }*/
 
 	}
 
-        
-	//protected abstract void initializeSchema(String tableName);
-        
-         protected void Transaction2(String tablename)
-	{
-                System.out.print("Je rentre Transaction1");
-		myStage = MainStageContainer.getInstance();
-		myViews = new Hashtable<String, Scene>();
-                 System.out.print("Je rentre Transaction2");
-		// save our table name for later
-		myTableName = tablename;
-                 System.out.print("Je rentre Transaction3");
-		// extract the schema from the database, calls methods in subclasses
-		initializeSchema(myTableName);
-                 System.out.print("Je rentre Transaction4");
-		// create a place to hold our state from the database
-		persistentState = new Properties();
-                 System.out.print("Je rentre Transaction5");
-		// create a registry for subscribers
-		myRegistry = new ModelRegistry("EntityBase." + tablename);	// for now
-                 System.out.print("Je rentre Transaction6");
-		// initialize the reference count
-		referenceCount = 0;
-                 System.out.print("Je rentre Transaction7");
-		// indicate the data in persistentState matches the database contents
-		dirty = false;
-                 System.out.print("Je rentre Transaction8");
-    }
-	//----------------------------------------------------------
-	protected abstract void setDependencies();
+  /*
+        public Vector<String> getEntryListView()
+        {
+        		Vector<String> v = new Vector<String>();
+            v.addElement(persistentState.getProperty("ScoutId"));
+        		v.addElement(persistentState.getProperty("FirstName"));
+        		v.addElement(persistentState.getProperty("MiddleInitial"));
+        		v.addElement(persistentState.getProperty("LastName"));
+        		v.addElement(persistentState.getProperty("DateOfBirth"));
+        		v.addElement(persistentState.getProperty("PhoneNumber"));
+            v.addElement(persistentState.getProperty("Email"));
+            v.addElement(persistentState.getProperty("Status"));
+            v.addElement(persistentState.getProperty("DateStatusUpdated"));
 
-	//---------------------------------------------------------
-	protected abstract Scene createView();
-
-	/**
-	 * Template method
-	 *
-	 */
-	//---------------------------------------------------------
-	protected void doYourJob()
+        		return v;
+        }*/
+        public void insert() {
+            //System.out.print("Insert Add Tree");
+            dependencies = new Properties();
+            dependencies.put("SessionId", persistentState.getProperty("SessionId"));
+            dependencies.put("TransactionType", persistentState.getProperty("TransactionType"));
+            dependencies.put("Barcode", persistentState.getProperty("Barcode"));
+            dependencies.put("TransactionAmount", persistentState.getProperty("TransactionAmount"));
+            dependencies.put("PaymentMethod", persistentState.getProperty("PaymentMethod"));
+            dependencies.put("CustomerName", persistentState.getProperty("CustomerName"));
+            dependencies.put("CustomerPhone", persistentState.getProperty("CustomerPhone"));
+            dependencies.put("CustomerEmail", persistentState.getProperty("CustomerEmail"));
+            dependencies.put("TransactionDate", persistentState.getProperty("TransactionDate"));
+            dependencies.put("TransactionTime", persistentState.getProperty("TransactionTime"));
+            //System.out.print("dependencies:" + dependencies);
+            try {
+                int i = insertAutoIncrementalPersistentState(this.mySchema, dependencies);
+            } catch (SQLException ex) {
+                //System.out.print("Error:" + ex);
+                Logger.getLogger(Tree.class.getName()).log(Level.SEVERE, null, ex);
+            }
+	}
+   protected void initializeSchema(String tableName)
 	{
-//		AccountCatalog catalog = null;
-//
-//		try
-//		{
-//			
-//			catalog = new AccountCatalog(myCust);
-//			myAccountIDs = (Vector)catalog.getState("AccountNumberList");
-//			
-//			Scene newScene = createView();
-//			
-//			swapToView(newScene);
-//
-//		}
-//		catch (Exception ex)
-//		{
-//				new Event(Event.getLeafLevelClassName(this), "Transaction",
-//					"Could not find any accounts for " + myCust.getState("ID"), Event.ERROR);
-//		}
+            if (mySchema == null)
+            {
+                mySchema = getSchemaInfo(tableName);
+            }
 	}
 
-	// forward declarations
-	//-----------------------------------------------------------
-	public abstract Object getState(String key);
-
-	//-----------------------------------------------------------
-	public abstract void stateChangeRequest(String key, Object value);
-
-	/** Called via the IView relationship
-	 * Re-define in sub-class, if necessary
-	 */
-	//----------------------------------------------------------
-	public void updateState(String key, Object value)
+   public void updateState(String key, Object value)
 	{
-		stateChangeRequest(key, value);
+            stateChangeRequest(key, value);
 	}
+  public void done()
+  {
+    myTreeLotCoordinator.transactionDone();
+  }
 
-	/** Register objects to receive state updates. */
-	//----------------------------------------------------------
-	public void subscribe(String key, IView subscriber)
-	{
-		// DEBUG: System.out.println("Cager[" + myTableName + "].subscribe");
-		// forward to our registry
-		myRegistry.subscribe(key, subscriber);
-	}
 
-	/** Unregister previously registered objects. */
-	//----------------------------------------------------------
-	public void unSubscribe(String key, IView subscriber)
-	{
-		// DEBUG: System.out.println("Cager.unSubscribe");
-		// forward to our registry
-		myRegistry.unSubscribe(key, subscriber);
-	}
-
-//         protected void initializeSchema(String tableName)
-//	{
-//		if (mySchema == null)
-//		{
-//			mySchema = getSchemaInfo(tableName);
-//		}
-//	}
-         
-	/**
-	 * Create an account (based on account number passed to you from the view)
-	 */
-	//----------------------------------------------------------
-//	protected Account createAccount(String accountNumber) throws
-//		InvalidPrimaryKeyException
-//	{
-//		return new Account(accountNumber);
-//	}
-
-	//----------------------------------------------------------
-	public Vector getAccountList()
-	{
-		return myAccountIDs;
-	}
-
-	//-----------------------------------------------------------------------------
-	public void swapToView(Scene newScene)
-	{
-		
-		if (newScene == null)
-		{
-			System.out.println("Transaction.swapToView(): Missing view for display");
-			new Event(Event.getLeafLevelClassName(this), "swapToView",
-				"Missing view for display ", Event.ERROR);
-			return;
-		}
-
-		
-		myStage.setScene(newScene);
-		myStage.sizeToScene();
-		
-			
-		//Place in center
-		WindowPosition.placeCenter(myStage);
-
-	}
 
 }
-

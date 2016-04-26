@@ -1,4 +1,3 @@
-
 // specify the package
 package model;
 
@@ -14,12 +13,12 @@ import exception.InvalidPrimaryKeyException;
 import event.Event;
 import database.*;
 import impresario.IView;
-import userinterface.EnterModifyScoutView;
+//import userinterface.EnterModifyScoutView;
 import userinterface.MainStageContainer;
 import userinterface.View;
 import userinterface.ViewFactory;
 import userinterface.ScoutCollectionView;
-import userinterface.EnterRemoveScoutView;
+//import userinterface.EnterRemoveScoutView;
 
 
 /** The class containing the ScoutCollection */
@@ -28,7 +27,7 @@ public class ScoutCollection  extends EntityBase implements IView
 {
 	private static final String myTableName = "SCOUT";
 
-	private Vector<Scout> scouts = new Vector<Scout>();
+	private Vector<Scout> scouts;
 	protected Stage myStage;
 	protected TreeLotCoordinator myTreeLotCoordinator;
 	protected Scout scout;
@@ -39,7 +38,7 @@ public class ScoutCollection  extends EntityBase implements IView
 	public ScoutCollection()   //(BookHolder cust) for param is removed
 	{
 		super(myTableName);
-		//scouts = new Vector<Scout>();
+		scouts = new Vector<Scout>();
 	}
 
 	public ScoutCollection(TreeLotCoordinator tlc)
@@ -53,9 +52,8 @@ public class ScoutCollection  extends EntityBase implements IView
 	{
 
 		int index = findIndexToAdd(s);
+
 		scouts.insertElementAt(s,index); // To build up a collection sorted on some key
-		System.out.println("addScout:"+s.getEntryListView());
-		System.out.println("Index:" + index);
 	}
 	//----------------------------------------------------------------------------------
 	private int findIndexToAdd(Scout b)
@@ -107,11 +105,15 @@ public class ScoutCollection  extends EntityBase implements IView
 	}
 
 	//----------------------------------------------------------------
-	/*public void stateChangeRequest(String key, Object value)
+	public void stateChangeRequest(String key, Object value)
 	{
-
-		myRegistry.updateSubscribers(key, this);
-	}*/
+                if (key.equals("SearchScout") == true) {
+                    persistentState = (Properties) value;
+                    findScoutsWithNameLike(persistentState.getProperty("FirstName"), persistentState.getProperty("LastName"));
+                    myRegistry.updateSubscribers(key, this);
+                }
+               
+	}
 
 	//----------------------------------------------------------
 	public Scout retrieve(String scoutId)
@@ -130,13 +132,6 @@ public class ScoutCollection  extends EntityBase implements IView
 
 		return retValue;
 	}
-	public void stateChangeRequest(String key, Object value)
-{
-				 if (key.equals("Done") == true)
-				 {
-						 myTreeLotCoordinator.createAndShowTreeLotCoordinatorView();
-				 }
-}
 
 	/** Called via the IView relationship */
 	//----------------------------------------------------------
@@ -183,7 +178,7 @@ public class ScoutCollection  extends EntityBase implements IView
 		System.out.println(allDataRetrieved);
 		if (allDataRetrieved != null)
 		{
-			//scouts = new Vector<Scout>();
+			scouts = new Vector<Scout>();
 
 			for (int cnt = 0; cnt < allDataRetrieved.size(); cnt++)
 			{
@@ -195,9 +190,7 @@ public class ScoutCollection  extends EntityBase implements IView
 
 				if (scout != null)
 				{
-					System.out.println("Scout:"+scout.getEntryListView());
 					addScout(scout);
-					System.out.println("Scouts:"+scouts);
 				}
 			}
 
@@ -215,13 +208,13 @@ public class ScoutCollection  extends EntityBase implements IView
 		}
 	}
 	//---------------------------------------------------------------
-	public void createAndShowScoutCollectionView(ScoutCollection sc)
+	public void createAndShowScoutCollectionView()
 	{
 		Scene currentScene = (Scene)myViews.get("ScoutCollectionView");
 		if (currentScene == null)
 		{
 			// create our initial view
-			View newView = new ScoutCollectionView(sc); // USE VIEW FACTORY
+			View newView = new ScoutCollectionView(this); // USE VIEW FACTORY
 			currentScene = new Scene(newView);
 			currentScene.getStylesheets().add("styleSheet.css");
 			myViews.put("ScoutCollectionView", currentScene);
@@ -231,11 +224,7 @@ public class ScoutCollection  extends EntityBase implements IView
 
 
 	}
-	public void modifyDone()
-	{
-		scout.modifyScoutDone();
-
-	}
+	
 	public void done()
 	{
 		myTreeLotCoordinator.transactionDone();

@@ -37,13 +37,13 @@ import javafx.scene.text.TextAlignment;
  */
 
 public class RemoveTreeView extends View {
-        
+
         protected Button cancelButton;
         protected Button submitButton;
 	private Button doneButton;
         protected MessageView statusLog;
         private TextField barcode;
-        
+
         private Locale locale = new Locale("en", "CA");
         private ResourceBundle buttons;
         private ResourceBundle titles;
@@ -56,15 +56,15 @@ public class RemoveTreeView extends View {
         private String alertTitle;
         private String alertSubTitle;
         private String alertBody;
-        
+
         private String alertTitleSucceeded;
         private String alertSubTitleSucceeded;
         private String alertBodySucceeded;
-        
+
         public RemoveTreeView(IModel book)
     {
         super(book, "RemoveTreeView");
-        
+
         Preferences prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
@@ -80,23 +80,23 @@ public class RemoveTreeView extends View {
         labels = ResourceBundle.getBundle("LabelsBundle", locale);
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
         refreshFormContents();
-        
+
         // create a container for showing the contents
         VBox container = new VBox(10);
-        container.setAlignment(Pos.CENTER);	
+        container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(15, 5, 5, 5));
-        
+
         // create our GUI components, add them to this panel
 	container.getChildren().add(createTitle());
 	container.getChildren().add(createFormContent());
-        
+
 	// Error message area
 	container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
         populateFields();
         myModel.subscribe("RemoveTreeViewError", this);
     }
-        
+
         protected void populateFields()
 	{
             barcode.setText("");
@@ -107,7 +107,7 @@ public class RemoveTreeView extends View {
             statusLog = new MessageView(initialMessage);
             return statusLog;
 	}
-        
+
         // Create the title container
 	//-------------------------------------------------------------
 	private Node createTitle()
@@ -122,7 +122,7 @@ public class RemoveTreeView extends View {
             container.getChildren().add(titleText);
             return container;
 	}
-        
+
         // Create the main form content
 	//-------------------------------------------------------------
 	private GridPane createFormContent()
@@ -134,10 +134,10 @@ public class RemoveTreeView extends View {
             grid.setPadding(new Insets(25, 25, 25, 25));
             barcode = createInput(grid, barcode, barcodeTitle, 0);
             createButton(grid, submitButton, submitTitle, 4);
-            createButton(grid, doneButton, cancelTitle, 5);           
+            createButton(grid, doneButton, cancelTitle, 5);
             return grid;
 	}
-        
+
          private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
 	{
             Label Author = new Label(label);
@@ -147,7 +147,7 @@ public class RemoveTreeView extends View {
             grid.add(textfield, 1, pos);
             return textfield;
 	}
-         
+
           private void createButton(GridPane grid, Button button, String nameButton, Integer pos)
 	{
             button = new Button(nameButton);
@@ -188,25 +188,28 @@ public class RemoveTreeView extends View {
                     alert.setContentText(alertBody);
                     alert.showAndWait();
                 }
-                Properties props = new Properties();
-                props.setProperty("Barcode", barcode.getText());
-                try
+                else
                 {
-                    myModel.stateChangeRequest("RemoveTree", props);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(alertTitleSucceeded);
-                    alert.setHeaderText(alertSubTitleSucceeded);
-                    alert.setContentText(alertBodySucceeded);
-                    alert.showAndWait();
-                    populateFields();
-                }
-                catch (Exception ex)
-                {
-                    System.out.print("Error Remove Tree");
+                    Properties props = new Properties();
+                    props.setProperty("Barcode", barcode.getText());
+                    try
+                    {
+                        myModel.stateChangeRequest("RemoveTree", props);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle(alertTitleSucceeded);
+                        alert.setHeaderText(alertSubTitleSucceeded);
+                        alert.setContentText(alertBodySucceeded);
+                        alert.showAndWait();
+                        populateFields();
+                    }
+                    catch (Exception ex)
+                    {
+                     System.out.print("Error Remove Tree");
+                    }
                 }
             }
 	}
-          
+
         private void refreshFormContents()
         {
             submitTitle = buttons.getString("submitDeleteTree");
@@ -220,17 +223,17 @@ public class RemoveTreeView extends View {
             alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
             alertBodySucceeded = alerts.getString("DeleteTreeBodySucceeded");
         }
-          
+
         public void displayMessage(String message)
 	{
             statusLog.displayMessage(message);
 	}
-        
+
         public void displayErrorMessage(String message)
 	{
             statusLog.displayErrorMessage(message);
 	}
-        
+
         public void updateState(String key, Object value)
 	{
             if (key.equals("RemoveTreeViewError") == true)
@@ -238,7 +241,7 @@ public class RemoveTreeView extends View {
 		displayErrorMessage((String)value);
             }
 	}
-        
+
         public void clearErrorMessage()
 	{
             statusLog.clearErrorMessage();

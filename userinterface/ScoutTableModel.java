@@ -13,10 +13,8 @@ public class ScoutTableModel
 	private final SimpleStringProperty middleInitial;
 	private final SimpleStringProperty lastName;
 	private final SimpleStringProperty dob;
-  private final SimpleStringProperty phoneNumber;
-  private final SimpleStringProperty email;
-	private final SimpleStringProperty status;
-	private final SimpleStringProperty date;
+        private final SimpleStringProperty phoneNumber;
+        private final SimpleStringProperty email;
 
 
 	//----------------------------------------------------------------------------
@@ -27,10 +25,8 @@ public class ScoutTableModel
 		middleInitial =  new SimpleStringProperty(scoutData.elementAt(2));
 		lastName =  new SimpleStringProperty(scoutData.elementAt(3));
 		dob =  new SimpleStringProperty(scoutData.elementAt(4));
-    phoneNumber =  new SimpleStringProperty(scoutData.elementAt(5));
-    email =  new SimpleStringProperty(scoutData.elementAt(6));
-		status =  new SimpleStringProperty(scoutData.elementAt(7));
-		date =  new SimpleStringProperty(scoutData.elementAt(8));
+                phoneNumber =  new SimpleStringProperty(scoutData.elementAt(5));
+                email =  new SimpleStringProperty(scoutData.elementAt(6));
 	}
 
 	//----------------------------------------------------------------------------
@@ -39,31 +35,9 @@ public class ScoutTableModel
     }
 
 	//----------------------------------------------------------------------------
-  public void setScoutID(String number)
-	{
-      scoutId.set(number);
-  }
-	//----------------------------------------------------------------------------
-	public String getStatus()
-	{
-			return status.get();
-	}
-	//----------------------------------------------------------------------------
-	public void setStatus(String number)
-	{
-			status.set(number);
-	}
-	//----------------------------------------------------------------------------
-		public String getDate()
-		{
-			 return date.get();
-		}
-
-	//----------------------------------------------------------------------------
-		public void setDate(String number)
-		{
-				date.set(number);
-		}
+    public void setScoutID(String number) {
+        scoutId.set(number);
+    }
 
     //----------------------------------------------------------------------------
     public String getFirstName() {

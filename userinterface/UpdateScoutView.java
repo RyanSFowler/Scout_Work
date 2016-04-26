@@ -32,13 +32,14 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 
-public class UpdateTreeTypeView extends View {
+public class UpdateScoutView extends View {
 
-    private TextField barcodePrefix;
-    private TextField cost;
-    private TextField typeDescription;
-    private String costTitle;
-    private String typeDescriptionTitle;
+    private TextField firstNameField;
+    private TextField lastNameField;
+    private TextField middleInitialField;
+    private TextField dobField;
+    private TextField phoneNumField;
+    private TextField emailField;
     protected Button cancel;
     protected Button submit;
 
@@ -49,7 +50,13 @@ public class UpdateTreeTypeView extends View {
     private ResourceBundle alerts;
     private String cancelTitle;
     private String submitTitle;
-    private String barcodePrefixTitle;
+    private String firstNameTitle;
+    private String lastNameTitle;
+    private String middleTitle;
+    private String dobTitle;
+    private String phoneTitle;
+    private String emailTitle;
+
     private String title;
     private String alertTitle;
     private String alertSubTitle;
@@ -59,9 +66,9 @@ public class UpdateTreeTypeView extends View {
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
 
-    public UpdateTreeTypeView(IModel model) {
-        super(model, "UpdateTreeTypeView");
-        Preferences prefs = Preferences.userNodeForPackage(AddNewTreeTypeView.class);
+    public UpdateScoutView(IModel model) {
+        super(model, "UpdateScoutView");
+        Preferences prefs = Preferences.userNodeForPackage(UpdateScoutView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -91,7 +98,7 @@ public class UpdateTreeTypeView extends View {
         //container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
         populateFields();
-        myModel.subscribe("UpdateTreeTypeError", this);
+        myModel.subscribe("UpdateScoutError", this);
     }
 
     public Node createTitle()
@@ -114,11 +121,15 @@ public class UpdateTreeTypeView extends View {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        barcodePrefix = createInput(grid, barcodePrefix, barcodePrefixTitle, 0);
-        cost = createInput(grid, cost, costTitle, 1);
-        typeDescription = createInput(grid, typeDescription, typeDescriptionTitle, 2);
-        createButton(grid, submit, submitTitle, 1, 4, 1);
-        createButton(grid, cancel, cancelTitle, 0, 4, 2);
+
+        firstNameField = createInput(grid, firstNameField, firstNameTitle, 0);
+        middleInitialField = createInput(grid, middleInitialField, middleTitle, 1);
+        lastNameField = createInput(grid, lastNameField, lastNameTitle, 2);
+        dobField = createInput(grid, dobField, dobTitle, 3);
+        phoneNumField = createInput(grid, phoneNumField, phoneTitle, 4);
+        emailField = createInput(grid, emailField, emailTitle, 5);
+        createButton(grid, submit, submitTitle, 1, 6, 1);
+        createButton(grid, cancel, cancelTitle, 0, 6, 2);
         return grid;
     }
 
@@ -163,27 +174,21 @@ public class UpdateTreeTypeView extends View {
 
     public void processAction(Event evt)
     {
+        String mI;
         Object source = evt.getSource();
         Button clickedBtn = (Button) source;
         if (clickedBtn.getId().equals("1") == true)
         {
-            if (barcodePrefix.getText().isEmpty() == true)
+            if(middleInitialField.getText().isEmpty() == true)
             {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(alertTitle);
-                alert.setHeaderText(alertSubTitle);
-                alert.setContentText(alertBody);
-                alert.showAndWait();
+              mI="";
             }
-            else if (cost.getText().isEmpty() == true)
+            else
             {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(alertTitle);
-                alert.setHeaderText(alertSubTitle);
-                alert.setContentText(alertBody);
-                alert.showAndWait();
+              mI = middleInitialField.getText();
             }
-            else if (typeDescription.getText().isEmpty() == true)
+            if ((firstNameField.getText().isEmpty() == true) || (lastNameField.getText().isEmpty() == true)
+                  || (dobField.getText().isEmpty() == true) || (phoneNumField.getText().isEmpty() == true) || (emailField.getText().isEmpty() == true))
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -194,13 +199,16 @@ public class UpdateTreeTypeView extends View {
             else
             {
                 Properties props = new Properties();
-                props.setProperty("BarcodePrefix", barcodePrefix.getText());
-                props.setProperty("Cost", cost.getText());
-                props.setProperty("TypeDescription", typeDescription.getText());
-
+                props.setProperty("FirstName", firstNameField.getText());
+                props.setProperty("MiddleInitial", mI);
+                props.setProperty("LastName", lastNameField.getText());
+                props.setProperty("DateOfBirth", dobField.getText());
+                props.setProperty("PhoneNumber", phoneNumField.getText());
+                props.setProperty("Email", emailField.getText());
+                props.setProperty("Status", "Active");
                 try
                 {
-                    myModel.stateChangeRequest("UpdateTreeType", props);
+                    myModel.stateChangeRequest("UpdateScout", props);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(alertTitleSucceeded);
                     alert.setHeaderText(alertSubTitleSucceeded);
@@ -210,7 +218,7 @@ public class UpdateTreeTypeView extends View {
                 }
                 catch (Exception ex)
                 {
-                    System.out.print("Error UpdateTreeType");
+                    System.out.print("Error UpdateScout");
                 }
             }
         }
@@ -222,25 +230,31 @@ public class UpdateTreeTypeView extends View {
 
     private void refreshFormContents()
     {
-        submitTitle = buttons.getString("submitModifyTreeType");
-        cancelTitle = buttons.getString("cancelTreeType");
-        barcodePrefixTitle = labels.getString("barcodePrefix");
-        costTitle = labels.getString("cost");
-        typeDescriptionTitle = labels.getString("typeDescription");
-        title = titles.getString("mainTitleModifyTreeType");
-        alertTitle = alerts.getString("UpdateTreeTypeTitle");
-        alertSubTitle = alerts.getString("UpdateTreeTypeSubTitle");
-        alertBody = alerts.getString("UpdateTreeTypeBody");
-        alertTitleSucceeded = alerts.getString("UpdateTreeTypeTitleSucceeded");
-        alertSubTitleSucceeded = alerts.getString("UpdateTreeTypeSubTitleSucceeded");
-        alertBodySucceeded = alerts.getString("UpdateTreeTypeBodySucceeded");
+        submitTitle = buttons.getString("submitModifyTree");
+        cancelTitle = buttons.getString("cancelAddScout");
+        firstNameTitle = labels.getString("firstName");
+        lastNameTitle = labels.getString("lastName");
+        middleTitle = labels.getString("middle");
+        dobTitle = labels.getString("dateOfBirth");
+        phoneTitle = labels.getString("phone");
+        emailTitle = labels.getString("email");
+        title = titles.getString("mainTitleModifyScout");
+        alertTitle = alerts.getString("ModifyScoutTitle");
+        alertSubTitle = alerts.getString("ModifyScoutSubTitle");
+        alertBody = alerts.getString("ModifyScoutBody");
+        alertTitleSucceeded = alerts.getString("ModifyScoutTitleSucceeded");
+        alertSubTitleSucceeded = alerts.getString("ModifyScoutSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("ModifyScoutBodySucceeded");
     }
 
     protected void populateFields()
     {
-        barcodePrefix.setText("");
-        cost.setText("");
-        typeDescription.setText("");
+      firstNameField.setText("");
+      lastNameField.setText("");
+      middleInitialField.setText("");
+      dobField.setText("");
+      phoneNumField.setText("");
+      emailField.setText("");
     }
 
     @Override

@@ -192,12 +192,14 @@ public class UpdateTreeView extends View {
                 try
                 {
                     myModel.stateChangeRequest("UpdateTree", props);
+                    
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(alertTitleSucceeded);
                     alert.setHeaderText(alertSubTitleSucceeded);
                     alert.setContentText(alertBodySucceeded);
                     alert.showAndWait();
                     populateFields();
+                    
                 }
                 catch (Exception ex)
                 {

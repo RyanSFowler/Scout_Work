@@ -6,10 +6,15 @@
 package userinterface;
 
 import impresario.IModel;
+
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
+
+import model.Session;
+
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -19,6 +24,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -32,16 +38,22 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 
-public class UpdateTreeTypeView extends View {
+public class OpenSessionView extends View {
 
-    private TextField barcodePrefix;
-    private TextField cost;
-    private TextField typeDescription;
-    private String costTitle;
-    private String typeDescriptionTitle;
+    private TextField date;
+    private TextField startTime;
+    private TextField endTime;
+    private TextField startCash;
+    private TextArea notes;
+    private ComboBox scout1;
+    private ComboBox scout2;
+    private ComboBox scout3;
+    private TextField scout1Companion;
+    private TextField scout2Companion;
+    private TextField scout3Companion;
     protected Button cancel;
     protected Button submit;
-
+    
     private Locale locale = new Locale("en", "CA");
     private ResourceBundle buttons;
     private ResourceBundle titles;
@@ -49,19 +61,21 @@ public class UpdateTreeTypeView extends View {
     private ResourceBundle alerts;
     private String cancelTitle;
     private String submitTitle;
-    private String barcodePrefixTitle;
     private String title;
     private String alertTitle;
     private String alertSubTitle;
     private String alertBody;
-
+    
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
-
-    public UpdateTreeTypeView(IModel model) {
-        super(model, "UpdateTreeTypeView");
-        Preferences prefs = Preferences.userNodeForPackage(AddNewTreeTypeView.class);
+    
+    private String description;
+    
+    
+    public OpenSessionView(IModel model) {
+        super(model, "OpenSessionView");
+        Preferences prefs = Preferences.userNodeForPackage(OpenSessionView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -77,23 +91,22 @@ public class UpdateTreeTypeView extends View {
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
         refreshFormContents();
         displayWindow();
-
+        
     }
-
-
+    
+    
     public void displayWindow()
     {
         VBox container = new VBox(10);
-        container.setAlignment(Pos.CENTER);
+        container.setAlignment(Pos.CENTER);	
         container.setPadding(new Insets(15, 5, 5, 5));
         container.getChildren().add(createTitle());
-	container.getChildren().add(createFormContent());
-        //container.getChildren().add(createStatusLog("                                            "));
-	getChildren().add(container);
+        container.getChildren().add(createFormContent());
+        getChildren().add(container);
         populateFields();
-        myModel.subscribe("UpdateTreeTypeError", this);
+        myModel.subscribe("LoginError", this);
     }
-
+    
     public Node createTitle()
     {
         HBox container = new HBox();
@@ -106,7 +119,7 @@ public class UpdateTreeTypeView extends View {
         container.getChildren().add(titleText);
         return container;
     }
-
+    
     private GridPane createFormContent()
     {
         GridPane grid = new GridPane();
@@ -114,24 +127,49 @@ public class UpdateTreeTypeView extends View {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        barcodePrefix = createInput(grid, barcodePrefix, barcodePrefixTitle, 0);
-        cost = createInput(grid, cost, costTitle, 1);
-        typeDescription = createInput(grid, typeDescription, typeDescriptionTitle, 2);
-        createButton(grid, submit, submitTitle, 1, 4, 1);
-        createButton(grid, cancel, cancelTitle, 0, 4, 2);
+        date = createInput(grid, date, "Date:", 0);
+        startTime = createInput(grid, startTime, "Start Time:", 1);
+        endTime = createInput(grid, startTime, "End Time:", 2);
+        startCash = createInput(grid, startCash, "Starting Cash: ($)", 3);
+        notes = new TextArea();
+        notes = createInputTextArea(grid, notes, description, 4);
+        scout1 = new ComboBox((ObservableList)(((Session) myModel).findAllScouts()));
+        scout1.setPromptText("Select a Scout");
+        grid.add(scout1, 0, 5);
+        scout1Companion = createInput(grid, scout1Companion, "This Scout's Companion", 2, 5);
+        scout2 = new ComboBox((ObservableList)(((Session) myModel).findAllScouts()));
+        scout2.setPromptText("Select a Scout");
+        grid.add(scout2, 0, 6);
+        scout2Companion = createInput(grid, scout2Companion, "This Scout's Companion", 2, 6);
+        scout3 = new ComboBox((ObservableList)(((Session) myModel).findAllScouts()));
+        scout3.setPromptText("Select a Scout");
+        grid.add(scout3, 0, 7);
+        scout3Companion = createInput(grid, scout3Companion, "This Scout's Companion", 2, 7);
+        createButton(grid, submit, submitTitle, 1, 9, 1);
+        createButton(grid, cancel, cancelTitle, 0, 9, 2);
         return grid;
     }
-
+    
     private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
     {
-        Label Author = new Label(label);
-        GridPane.setHalignment(Author, HPos.RIGHT);
-        grid.add(Author, 0, pos);
+        Label fieldLabel = new Label(label);
+        GridPane.setHalignment(fieldLabel, HPos.RIGHT);
+        grid.add(fieldLabel, 0, pos);
         textfield = new TextField();
         grid.add(textfield, 1, pos);
         return textfield;
     }
-
+    
+    private TextField createInput(GridPane grid, TextField textfield, String label, Integer cPos, Integer rPos)
+    {
+        Label fieldLabel = new Label(label);
+        GridPane.setHalignment(fieldLabel, HPos.RIGHT);
+        grid.add(fieldLabel, cPos-1, rPos);
+        textfield = new TextField();
+        grid.add(textfield, cPos, rPos);
+        return textfield;
+    }
+    
     private TextArea createInputTextArea(GridPane grid, TextArea textarea, String label, Integer pos)
     {
         Label Author = new Label(label);
@@ -144,7 +182,7 @@ public class UpdateTreeTypeView extends View {
         grid.add(textarea, 1, pos);
         return textarea;
     }
-
+    
     private void createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
     {
         button = new Button(nameButton);
@@ -160,14 +198,14 @@ public class UpdateTreeTypeView extends View {
         btnContainer.getChildren().add(button);
         grid.add(btnContainer, pos1, pos2);
     }
-
+    
     public void processAction(Event evt)
     {
         Object source = evt.getSource();
         Button clickedBtn = (Button) source;
-        if (clickedBtn.getId().equals("1") == true)
+        if (clickedBtn.getId().equals("1"))
         {
-            if (barcodePrefix.getText().isEmpty() == true)
+            if (date.getText().isEmpty())
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -175,7 +213,7 @@ public class UpdateTreeTypeView extends View {
                 alert.setContentText(alertBody);
                 alert.showAndWait();
             }
-            else if (cost.getText().isEmpty() == true)
+            else if (startTime.getText().isEmpty())
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -183,7 +221,23 @@ public class UpdateTreeTypeView extends View {
                 alert.setContentText(alertBody);
                 alert.showAndWait();
             }
-            else if (typeDescription.getText().isEmpty() == true)
+            else if (endTime.getText().isEmpty())
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(alertTitle);
+                alert.setHeaderText(alertSubTitle);
+                alert.setContentText(alertBody);
+                alert.showAndWait();
+            }
+            else if (startCash.getText().isEmpty())
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(alertTitle);
+                alert.setHeaderText(alertSubTitle);
+                alert.setContentText(alertBody);
+                alert.showAndWait();
+            }
+            else if (notes.getText().isEmpty())
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -193,14 +247,25 @@ public class UpdateTreeTypeView extends View {
             }
             else
             {
+            	String scoutData1 = (String)scout1.getValue();
+            	String scoutData2 = (String)scout2.getValue();
+            	String scoutData3 = (String)scout3.getValue();
                 Properties props = new Properties();
-                props.setProperty("BarcodePrefix", barcodePrefix.getText());
-                props.setProperty("Cost", cost.getText());
-                props.setProperty("TypeDescription", typeDescription.getText());
-
+                props.setProperty("Date", date.getText());
+                props.setProperty("StartTime", startTime.getText());
+                props.setProperty("EndTime", endTime.getText());
+                props.setProperty("StartCash", startCash.getText());
+                props.setProperty("Notes", notes.getText());
+                props.setProperty("Scout1", scoutData1.substring(0, scoutData1.indexOf(" ")));
+                props.setProperty("Scout1Companion", scout1Companion.getText());
+                props.setProperty("Scout2", scoutData2.substring(0, scoutData2.indexOf(" ")));
+                props.setProperty("Scout2Companion", scout2Companion.getText());
+                props.setProperty("Scout3", scoutData3.substring(0, scoutData3.indexOf(" ")));
+                props.setProperty("Scout3Companion", scout3Companion.getText());
+                System.out.println(props);
                 try
                 {
-                    myModel.stateChangeRequest("UpdateTreeType", props);
+                    myModel.stateChangeRequest("OpenSession", props);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(alertTitleSucceeded);
                     alert.setHeaderText(alertSubTitleSucceeded);
@@ -210,7 +275,7 @@ public class UpdateTreeTypeView extends View {
                 }
                 catch (Exception ex)
                 {
-                    System.out.print("Error UpdateTreeType");
+                    System.out.print("Error Opening Session");
                 }
             }
         }
@@ -219,34 +284,35 @@ public class UpdateTreeTypeView extends View {
             myModel.stateChangeRequest("Done", null);
         }
     }
-
+    
     private void refreshFormContents()
     {
-        submitTitle = buttons.getString("submitModifyTreeType");
-        cancelTitle = buttons.getString("cancelTreeType");
-        barcodePrefixTitle = labels.getString("barcodePrefix");
-        costTitle = labels.getString("cost");
-        typeDescriptionTitle = labels.getString("typeDescription");
-        title = titles.getString("mainTitleModifyTreeType");
-        alertTitle = alerts.getString("UpdateTreeTypeTitle");
-        alertSubTitle = alerts.getString("UpdateTreeTypeSubTitle");
-        alertBody = alerts.getString("UpdateTreeTypeBody");
-        alertTitleSucceeded = alerts.getString("UpdateTreeTypeTitleSucceeded");
-        alertSubTitleSucceeded = alerts.getString("UpdateTreeTypeSubTitleSucceeded");
-        alertBodySucceeded = alerts.getString("UpdateTreeTypeBodySucceeded");
+        submitTitle = buttons.getString("submitTree");
+        cancelTitle = buttons.getString("cancelTree");
+        description = labels.getString("notes");
+        title = titles.getString("mainTitleOpenSession");
+        alertTitle = alerts.getString("AddTreeTitle");
+        alertSubTitle = alerts.getString("AddTreeSubTitle");
+        alertBody = alerts.getString("AddTreeBody");
+        alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
+        alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("AddTreeBodySucceeded");
     }
-
+    
+    
     protected void populateFields()
     {
-        barcodePrefix.setText("");
-        cost.setText("");
-        typeDescription.setText("");
+        date.setText("");
+        startTime.setText("");
+        endTime.setText("");
+        startCash.setText("");
+        notes.setText("");
     }
-
+    
     @Override
     public void updateState(String key, Object value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-
+    
+    
 }

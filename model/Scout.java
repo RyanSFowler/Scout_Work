@@ -16,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import userinterface.View;
 import userinterface.ViewFactory;
-import model.ScoutCollection;
 
 
 public class Scout extends EntityBase implements IView, IModel {
@@ -37,10 +36,10 @@ public class Scout extends EntityBase implements IView, IModel {
                 createAddScoutView();
             }
             else if (type == "Modify") {
-                createEnterModifyScoutView();
+                createModifyScoutView();
             }
             else if (type == "Remove") {
-                createEnterRemoveScoutView();
+                createRemoveScoutView();
             }
         }
         public Scout(Properties props)
@@ -66,15 +65,15 @@ public class Scout extends EntityBase implements IView, IModel {
 			          }
 		        }
 	      }
-        public void createEnterModifyScoutView() {
-               Scene currentScene = (Scene)myViews.get("EnterModifyScoutView");
+        public void createModifyScoutView() {
+               Scene currentScene = (Scene)myViews.get("UpdateScoutView");
 
                if (currentScene == null)
                {
-                   View newView = ViewFactory.createView("EnterModifyScoutView", this);
+                   View newView = ViewFactory.createView("UpdateScoutView", this);
                    currentScene = new Scene(newView);
                    currentScene.getStylesheets().add("styleSheet.css");
-                   myViews.put("EnterModifyScoutView", currentScene);
+                   myViews.put("UpdateScoutView", currentScene);
                }
                swapToView(currentScene);
            }
@@ -91,43 +90,18 @@ public class Scout extends EntityBase implements IView, IModel {
                }
                swapToView(currentScene);
            }
-           public void createEnterRemoveScoutView() {
-                  Scene currentScene = (Scene)myViews.get("EnterRemoveScoutView");
+           public void createRemoveScoutView() {
+                  Scene currentScene = (Scene)myViews.get("RemoveScoutView");
 
                   if (currentScene == null)
                   {
-                      View newView = ViewFactory.createView("EnterRemoveScoutView", this);
-                      currentScene = new Scene(newView);
-                      currentScene.getStylesheets().add("styleSheet.css");
-                      myViews.put("EnterRemoveScoutView", currentScene);
-                  }
-                  swapToView(currentScene);
-              }
-
-        public void createModifyScoutView() {
-               Scene currentScene = (Scene)myViews.get("ModifyScoutView");
-
-               if (currentScene == null)
-               {
-                   View newView = ViewFactory.createView("ModifyScoutView", this);
-                   currentScene = new Scene(newView);
-                   currentScene.getStylesheets().add("styleSheet.css");
-                   myViews.put("ModifyScoutView", currentScene);
-               }
-               swapToView(currentScene);
-           }
-
-         public void createRemoveScoutView() {
-                Scene currentScene = (Scene)myViews.get("RemoveScoutView");
-                if (currentScene == null)
-                {
                       View newView = ViewFactory.createView("RemoveScoutView", this);
                       currentScene = new Scene(newView);
                       currentScene.getStylesheets().add("styleSheet.css");
                       myViews.put("RemoveScoutView", currentScene);
-                }
-                swapToView(currentScene);
-           }
+                  }
+                  swapToView(currentScene);
+              }
      public void setDependencies()
 	{
             dependencies = new Properties();
@@ -155,7 +129,7 @@ public class Scout extends EntityBase implements IView, IModel {
                 myTreeLotCoordinator.createAndShowTreeLotCoordinatorView();
 
             }
-            else if (key.equals("ModifyScout") == true)
+            else if (key.equals("UpdateScout") == true)
             {
                 if (value != null)
                 {
@@ -176,13 +150,13 @@ public class Scout extends EntityBase implements IView, IModel {
                 if (value != null)
                 {
                     persistentState = (Properties) value;
-                    RemoveScout();
+                    RemoveScoutInDatabase();
                 }
             }
 
 	}
 
-        public void RemoveScout() {
+    /*    public void RemoveScout() {
             try
             {
                 if (persistentState.getProperty("ScoutId") != null)
@@ -225,7 +199,7 @@ public class Scout extends EntityBase implements IView, IModel {
             v.addElement(persistentState.getProperty("DateStatusUpdated"));
 
         		return v;
-        }
+        }*/
         public void insert() {
             //System.out.print("Insert Add Tree");
             dependencies = new Properties();
@@ -245,37 +219,75 @@ public class Scout extends EntityBase implements IView, IModel {
             }
 	}
 
-     private void UpdateScoutInDatabase()
-     {
-         try
-	{
-            if (persistentState.getProperty("ScoutId") != null)
-            {
-                String query = "SELECT * FROM " + myTableName + " WHERE ScoutId = '" + persistentState.getProperty("ScoutId") + "' ;";
-                System.out.print("Query:" + query);
-                Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
-                if (allDataRetrieved != null && allDataRetrieved.size() == 1) {
-                Properties whereClause = new Properties();
-		whereClause.setProperty("ScoutId", persistentState.getProperty("ScoutId"));
-		updatePersistentState(mySchema, persistentState, whereClause);
-		updateStatusMessage = "Add New Scout  : " + persistentState.getProperty("ScoutId") + " Add successfully in database!";
-		System.out.println(updateStatusMessage);
+private void UpdateScoutInDatabase()
+  {
+    String first = persistentState.getProperty("FirstName");
+    String last =  persistentState.getProperty("LastName");
+      try
+{
+         if (first != null && last != null)
+         {
+             String query = "SELECT * FROM " + myTableName + " WHERE ((FirstName LIKE '" + first +	"') AND (LastName LIKE '" + last + "'));";
+             System.out.print("Query:" + query);
+             Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
+             System.out.println(allDataRetrieved);
+             if (allDataRetrieved != null ) {//&& allDataRetrieved.size() == 1
+             Properties whereClause = new Properties();
+             whereClause.setProperty("LastName", persistentState.getProperty("LastName"));
+             updatePersistentState(mySchema, persistentState, whereClause);
+             updateStatusMessage = "update scout : " + persistentState.getProperty("FirstName") + " Added successfully in database!";
+             System.out.println(updateStatusMessage);
+          }
+             else {
+                 // Return an error (no barcode match)
              }
-                else {
-                    // Return an error (no barcode match)
-                }
-            }
-            else
-            {
-                // Return an error (barcode empty)
-            }
-        }
-        catch (SQLException ex)
-	{
-            // Return a SQL Error
-            //updateStatusMessage = "Error in installing account data in database!";
-        }
+         }
+         else
+         {
+             // Return an error (barcode empty)
+         }
      }
+     catch (SQLException ex)
+{
+         // Return a SQL Error
+         //updateStatusMessage = "Error in installing account data in database!";
+     }
+  }
+
+  private void RemoveScoutInDatabase()
+  {
+    String first = persistentState.getProperty("FirstName");
+    String last =  persistentState.getProperty("LastName");
+      try
+{
+         if (first != null && last != null)
+         {
+             String query = "SELECT * FROM " + myTableName + " WHERE ((FirstName LIKE '" + first +	"') AND (LastName LIKE '" + last + "'));";
+             System.out.print("Query:" + query);
+             Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
+             System.out.println(allDataRetrieved);
+             if (allDataRetrieved != null ) {//&& allDataRetrieved.size() == 1
+             Properties whereClause = new Properties();
+             whereClause.setProperty("LastName", persistentState.getProperty("LastName"));
+             updatePersistentState(mySchema, persistentState, whereClause);
+             updateStatusMessage = "Remove scout : " + persistentState.getProperty("LastName") + " removed successfully in database!";
+             System.out.println(updateStatusMessage);
+          }
+             else {
+                 // Return an error (no barcode match)
+             }
+         }
+         else
+         {
+             // Return an error (barcode empty)
+         }
+     }
+     catch (SQLException ex)
+{
+         // Return a SQL Error
+         //updateStatusMessage = "Error in installing account data in database!";
+     }
+  }
 
    protected void initializeSchema(String tableName)
 	{
@@ -289,10 +301,6 @@ public class Scout extends EntityBase implements IView, IModel {
 	{
             stateChangeRequest(key, value);
 	}
-  public void modifyScoutDone()
-  {
-    createEnterModifyScoutView();
-  }
   public void done()
   {
     myTreeLotCoordinator.transactionDone();
