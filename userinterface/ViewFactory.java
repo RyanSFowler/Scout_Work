@@ -19,10 +19,6 @@ public class ViewFactory {
 		{
 			return new UpdateScoutView(model);
 		}
-                else if(viewName.equals("UpdateScoutView2") == true)
-		{
-			return new UpdateScoutView2(model);
-		}
 		else if(viewName.equals("RemoveScoutView") == true)
 		{
 			return new RemoveScoutView(model);
@@ -51,7 +47,10 @@ public class ViewFactory {
 		{
 			return new UpdateTreeTypeView(model);
 		}
-
+                else if(viewName.equals("UpdateTreeTypeView2") == true)
+		{
+			return new UpdateTreeTypeView2(model);
+		}
 		else if(viewName.equals("OpenSessionView") == true)
 		{
 			return new OpenSessionView(model);

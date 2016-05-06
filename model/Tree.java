@@ -13,8 +13,11 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import userinterface.UpdateTreeView2;
 import userinterface.View;
 import userinterface.ViewFactory;
 
@@ -174,6 +177,7 @@ public class Tree extends EntityBase implements IView, IModel {
                    persistentState = (Properties) value;
                    //System.out.print("ModifyTree:" + persistentState.getProperty("Barcode"));
                    FindTreeInDatabase(persistentState.getProperty("Barcode"));
+                   Barcode = persistentState.getProperty("Barcode");
                 }
             }
             else if (key.equals("ModifyTree2") == true)
@@ -184,6 +188,10 @@ public class Tree extends EntityBase implements IView, IModel {
                    //System.out.print("ModifyTree:" + persistentState.getProperty("Barcode"));
                    Barcode = persistentState.getProperty("Barcode");
                    Notes = persistentState.getProperty("Notes");
+                   Preferences prefs = Preferences.userNodeForPackage(UpdateTreeView2.class);
+                   prefs.put("notes", "");
+                   prefs.put("notes", Notes.toString());
+                   
                    createUpdateTree2View();
                 }
             }
@@ -222,6 +230,8 @@ public class Tree extends EntityBase implements IView, IModel {
         public void RemoveTree() {
             try
             {
+                persistentState.setProperty("Barcode", Barcode);
+                initializeSchema(myTableName);
                 if (persistentState.getProperty("Barcode") != null)
                 {
                 String query = "SELECT * FROM " + myTableName + " WHERE Barcode = '" + persistentState.getProperty("Barcode") + "' ;";
@@ -231,7 +241,7 @@ public class Tree extends EntityBase implements IView, IModel {
 		whereClause.setProperty("Barcode", persistentState.getProperty("Barcode"));
 		deletePersistentState(mySchema, whereClause);
 		updateStatusMessage = "Remove Tree  : " + persistentState.getProperty("Barcode") + " Remove successfully in database!";
-		System.out.println(updateStatusMessage);
+		//System.out.println(updateStatusMessage);
              }
                 else {
                       System.out.print("No match with :" + persistentState.getProperty("Barcode"));

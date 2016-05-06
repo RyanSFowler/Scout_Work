@@ -43,12 +43,14 @@ import javafx.scene.text.TextAlignment;
 import model.Tree;
 import model.TreeVector;
 import model.ModifyTree;
+import model.TreeType;
+import model.TreeTypeVector;
 
 /**
  *
  * @author florianjousselin
  */
-public class UpdateTreeView extends View {
+public class UpdateTreeTypeView2 extends View {
 
     private TextField barcode;
     private TextArea notes;
@@ -71,16 +73,17 @@ public class UpdateTreeView extends View {
     private String alertBody;
     private String description;
     
-    private TableView<TreeVector> tableOfTree;
+    private TableView<TreeTypeVector> tableOfTreeType;
     
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
-    private TableColumn barcodeColumn;
-    private TableColumn NotesColumn;
+    private TableColumn barcodePrefix;
+    private TableColumn typeDescription;
+    private TableColumn cost;
     
-    public UpdateTreeView(IModel model) {
-        super(model, "UpdateTreeView");
+    public UpdateTreeTypeView2(IModel model) {
+        super(model, "UpdateTreeView2");
         Preferences prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
@@ -134,18 +137,21 @@ public class UpdateTreeView extends View {
 
 	createInput2(grid, 0);
 
-	tableOfTree = new TableView<TreeVector>();
-	barcodeColumn = new TableColumn("Barcode");
-	barcodeColumn.setMinWidth(240);
-	barcodeColumn.setCellValueFactory(new PropertyValueFactory<Tree, String>("barcode"));
-	NotesColumn = new TableColumn("Notes");
-	NotesColumn.setMinWidth(240);
-	NotesColumn.setCellValueFactory(new PropertyValueFactory<Tree, String>("notes"));
+	tableOfTreeType = new TableView<TreeTypeVector>();
+	barcodePrefix = new TableColumn("Barcode Prefix");
+	barcodePrefix.setMinWidth(240);
+	barcodePrefix.setCellValueFactory(new PropertyValueFactory<Tree, String>("barcode"));
+	typeDescription = new TableColumn("Type Description");
+	typeDescription.setMinWidth(240);
+	typeDescription.setCellValueFactory(new PropertyValueFactory<Tree, String>("description"));
+        cost = new TableColumn("Cost");
+	cost.setMinWidth(240);
+	cost.setCellValueFactory(new PropertyValueFactory<Tree, String>("cost"));
         
-	tableOfTree.getColumns().addAll(barcodeColumn, NotesColumn);
+	tableOfTreeType.getColumns().addAll(barcodePrefix, typeDescription, cost);
 	ScrollPane scrollPane = new ScrollPane();
 	scrollPane.setPrefSize(500, 150);
-	scrollPane.setContent(tableOfTree);
+	scrollPane.setContent(tableOfTreeType);
 
 	grid.add(scrollPane, 1, 1);
         
@@ -228,7 +234,7 @@ public class UpdateTreeView extends View {
                 props.setProperty("Barcode", barcode.getText());
                 try
                 {
-                    myModel.stateChangeRequest("ModifyTree", props);
+                    myModel.stateChangeRequest("UpdateTreeType", props);
                     populateFields();
                     
                 }
@@ -261,24 +267,25 @@ public class UpdateTreeView extends View {
     
     protected void getEntryTableModelValues()
     {
-	ObservableList<TreeVector> tableData = FXCollections.observableArrayList();
+	ObservableList<TreeTypeVector> tableData = FXCollections.observableArrayList();
 	try
 	    {
-		Tree tree = (Tree)myModel.getState("Tree");
-		Vector entryList = (Vector)tree.getResultFromDB("ModifyTree");
-		Enumeration entries = entryList.elements();
+		TreeType tree = (TreeType)myModel.getState("TreeType");
+		Vector entryList = (Vector)tree.getResultFromDB("ModifyTreeType");
+                Enumeration entries = entryList.elements();
                 Vector<String> view = entryList;
-                TreeVector nextTableRowData = new TreeVector(view);
+                TreeTypeVector nextTableRowData = new TreeTypeVector(view);
                 tableData.add(nextTableRowData);
-                tableOfTree.setItems(tableData);
-                tableOfTree.setEditable(true);
+                tableOfTreeType.setItems(tableData);
+                tableOfTreeType.setEditable(true);
                 
-                tableOfTree.setOnMousePressed(new EventHandler<MouseEvent>() {
+                tableOfTreeType.setOnMousePressed(new EventHandler<MouseEvent>() {
                 public void handle(MouseEvent me) {
                         Properties props = new Properties();
-                        props.setProperty("Barcode", view.get(0));
-                        props.setProperty("Notes", view.get(1));
-                        myModel.stateChangeRequest("ModifyTree2", props);
+                        props.setProperty("BarcodePrefix", view.get(0));
+                        props.setProperty("TypeDescription", view.get(1));
+                        props.setProperty("Cost", view.get(2));
+                        myModel.stateChangeRequest("ModifyTreeType", props);
                     }
                 });
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);

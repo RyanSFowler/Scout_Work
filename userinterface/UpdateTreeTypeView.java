@@ -58,10 +58,12 @@ public class UpdateTreeTypeView extends View {
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
+    
+     private Preferences prefs;
 
     public UpdateTreeTypeView(IModel model) {
         super(model, "UpdateTreeTypeView");
-        Preferences prefs = Preferences.userNodeForPackage(AddNewTreeTypeView.class);
+        prefs = Preferences.userNodeForPackage(AddNewTreeTypeView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -88,7 +90,6 @@ public class UpdateTreeTypeView extends View {
         container.setPadding(new Insets(15, 5, 5, 5));
         container.getChildren().add(createTitle());
 	container.getChildren().add(createFormContent());
-        //container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
         populateFields();
         myModel.subscribe("UpdateTreeTypeError", this);
@@ -114,7 +115,7 @@ public class UpdateTreeTypeView extends View {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        barcodePrefix = createInput(grid, barcodePrefix, barcodePrefixTitle, 0);
+        //barcodePrefix = createInput(grid, barcodePrefix, barcodePrefixTitle, 0);
         cost = createInput(grid, cost, costTitle, 1);
         typeDescription = createInput(grid, typeDescription, typeDescriptionTitle, 2);
         createButton(grid, submit, submitTitle, 1, 4, 1);
@@ -128,6 +129,21 @@ public class UpdateTreeTypeView extends View {
         GridPane.setHalignment(Author, HPos.RIGHT);
         grid.add(Author, 0, pos);
         textfield = new TextField();
+        if (pos == 0) {
+            String notesText = prefs.get("BarcodePrefix", null);
+            System.out.println("Barcode:" + notesText);
+            textfield.setText(notesText);   
+        }
+        else if (pos == 1) {
+            String notesText = prefs.get("Cost", null);
+            System.out.println("Cost:" + notesText);
+            textfield.setText(notesText);   
+        }
+        else if (pos == 2) {
+            String notesText = prefs.get("TypeDescription", null);
+            System.out.println("TypeDescription:" + notesText);
+            textfield.setText(notesText);   
+        }
         grid.add(textfield, 1, pos);
         return textfield;
     }
@@ -167,15 +183,7 @@ public class UpdateTreeTypeView extends View {
         Button clickedBtn = (Button) source;
         if (clickedBtn.getId().equals("1") == true)
         {
-            if (barcodePrefix.getText().isEmpty() == true)
-            {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(alertTitle);
-                alert.setHeaderText(alertSubTitle);
-                alert.setContentText(alertBody);
-                alert.showAndWait();
-            }
-            else if (cost.getText().isEmpty() == true)
+            if (cost.getText().isEmpty() == true)
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -194,13 +202,13 @@ public class UpdateTreeTypeView extends View {
             else
             {
                 Properties props = new Properties();
-                props.setProperty("BarcodePrefix", barcodePrefix.getText());
+              //  props.setProperty("BarcodePrefix", barcodePrefix.getText());
                 props.setProperty("Cost", cost.getText());
                 props.setProperty("TypeDescription", typeDescription.getText());
 
                 try
                 {
-                    myModel.stateChangeRequest("UpdateTreeType", props);
+                    myModel.stateChangeRequest("UpdateTreeType2", props);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(alertTitleSucceeded);
                     alert.setHeaderText(alertSubTitleSucceeded);
@@ -238,7 +246,7 @@ public class UpdateTreeTypeView extends View {
 
     protected void populateFields()
     {
-        barcodePrefix.setText("");
+        //barcodePrefix.setText("");
         cost.setText("");
         typeDescription.setText("");
     }

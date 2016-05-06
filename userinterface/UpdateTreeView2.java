@@ -78,10 +78,11 @@ public class UpdateTreeView2 extends View {
     private String alertBodySucceeded;
     private TableColumn barcodeColumn;
     private TableColumn NotesColumn;
+    private Preferences prefs;
     
     public UpdateTreeView2(IModel model) {
         super(model, "UpdateTreeView");
-        Preferences prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
+        prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -151,6 +152,10 @@ public class UpdateTreeView2 extends View {
 	hb.setAlignment(Pos.CENTER);
 	hb.getChildren().add(new Label("Notes:"));
 	notes = new TextArea();
+        
+        String notesText = prefs.get("notes", null);
+        notes.setText(notesText);
+
 	hb.getChildren().add(notes);
 	grid.add(hb, 1, pos);
     }

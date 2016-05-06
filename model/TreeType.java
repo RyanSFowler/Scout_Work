@@ -5,6 +5,7 @@
  */
 package model;
 
+import exception.InvalidPrimaryKeyException;
 import impresario.IModel;
 import impresario.IView;
 import java.sql.SQLException;
@@ -12,8 +13,10 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import userinterface.UpdateTreeView2;
 import userinterface.View;
 import userinterface.ViewFactory;
 
@@ -25,7 +28,10 @@ public class TreeType extends EntityBase implements IView, IModel {
      protected Properties dependencies;
      private static final String myTableName = "TREETYPE";
      private String updateStatusMessage = "";
-
+     public Vector<String> ModifyTreeType;
+     public String Barcode;
+     public String TypeDescription;
+     public String Cost;
 
      public TreeType(TreeLotCoordinator l, String type) throws Exception {
             super(myTableName);
@@ -36,7 +42,8 @@ public class TreeType extends EntityBase implements IView, IModel {
                 createAddTreeTypeView();
             }
             else if (type == "Modify") {
-                createUpdateTreeTypeView();
+                createUpdateTreeTypeView2();
+                //createUpdateTreeTypeView();
             }
 
         }
@@ -54,6 +61,19 @@ public class TreeType extends EntityBase implements IView, IModel {
             swapToView(currentScene);
         }
 
+      public void createUpdateTreeTypeView2() {
+            Scene currentScene = (Scene)myViews.get("UpdateTreeTypeView2");
+
+            if (currentScene == null)
+            {
+                View newView = ViewFactory.createView("UpdateTreeTypeView2", this);
+                currentScene = new Scene(newView);
+                currentScene.getStylesheets().add("styleSheet.css");
+                myViews.put("UpdateTreeTypeView2", currentScene);
+            }
+            swapToView(currentScene);
+        }
+     
      public void createUpdateTreeTypeView() {
             Scene currentScene = (Scene)myViews.get("UpdateTreeTypeView");
 
@@ -80,6 +100,40 @@ public class TreeType extends EntityBase implements IView, IModel {
             return null;
 	}
 
+     public void FindTreeTypeInDatabase(String title)
+	{
+	    String query = "SELECT * FROM " + myTableName + " WHERE BarcodePrefix = " + title + ";";
+	    Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
+            System.out.println("Vector:" + allDataRetrieved);
+	    try
+            {
+		if (allDataRetrieved != null)
+		{
+                    for (Properties p : allDataRetrieved)
+            	    {
+                        ModifyTreeType b = new ModifyTreeType(p);
+                        ModifyTreeType = b.getVector();
+		    }
+                   System.out.println("ModifyTreeType:" + ModifyTreeType);
+                }
+		else
+		{
+                    throw new InvalidPrimaryKeyException("No matching barcode for number: "
+							     + title + ".");
+		}
+	    } catch (InvalidPrimaryKeyException e) {
+		System.err.println("Error: " + e);
+	    }
+	}
+     
+     public Vector<String> getResultFromDB(String key)
+	{
+            if (key.equals("ModifyTreeType")) {
+                return ModifyTreeType;
+            }
+            return null;
+	}
+     
      public void stateChangeRequest(String key, Object value)
 	{
             if (key.equals("Done") == true)
@@ -92,7 +146,35 @@ public class TreeType extends EntityBase implements IView, IModel {
                 if (value != null)
                 {
                    persistentState = (Properties) value;
+                   FindTreeTypeInDatabase(persistentState.getProperty("Barcode"));
+                   Barcode = persistentState.getProperty("Barcode");
+                }
+            }
+            else if (key.equals("UpdateTreeType2") == true)
+            {
+                if (value != null)
+                {
+                   persistentState = (Properties) value;
                    UpdateTreeTypeInDatabase();
+                   myTreeLotCoordinator.createAndShowTreeLotCoordinatorView();
+                }
+            }
+            else if (key.equals("ModifyTreeType") == true)
+            {
+                if (value != null)
+                {
+                   persistentState = (Properties) value;
+                   TypeDescription = persistentState.getProperty("TypeDescription");
+                   Cost = persistentState.getProperty("Cost");
+                    Preferences prefs = Preferences.userNodeForPackage(UpdateTreeView2.class);
+                   prefs.put("TypeDescription", "");
+                   prefs.put("TypeDescription", TypeDescription.toString());
+                   prefs.put("Cost", "");
+                   prefs.put("Cost", Cost.toString());
+                   prefs.put("BarcodePrefix", "");
+                   prefs.put("BarcodePrefix", Barcode.toString());
+                   createUpdateTreeTypeView();
+                   //UpdateTreeTypeInDatabase();
                 }
             }
             else if (key.equals("AddNewTreeType") == true)
@@ -125,14 +207,19 @@ public class TreeType extends EntityBase implements IView, IModel {
      {
          try
 	{
-            if (persistentState.getProperty("BarcodePrefix") != null)
+            if (Barcode != null)
             {
-                String query = "SELECT * FROM " + myTableName + " WHERE BarcodePrefix = '" + persistentState.getProperty("BarcodePrefix") + "' ;";
+                 persistentState.setProperty("BarcodePrefix", Barcode);
+                String query = "SELECT * FROM " + myTableName + " WHERE BarcodePrefix = '" + Barcode + "' ;";
                 System.out.print("Query:" + query);
                 Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
                 if (allDataRetrieved != null && allDataRetrieved.size() == 1) {
                 Properties whereClause = new Properties();
+                System.out.println("persistentState:" + persistentState);
+                System.out.println("mySchema:" + mySchema);
+               // System.out.println("WhereClause:" + whereClause);
 		whereClause.setProperty("BarcodePrefix", persistentState.getProperty("BarcodePrefix"));
+                System.out.println("WhereClause:" + whereClause);
 		updatePersistentState(mySchema, persistentState, whereClause);
 		updateStatusMessage = "Add New Tree Type : " + persistentState.getProperty("BarcodePrefix") + " Add successfully in database!";
 		System.out.println(updateStatusMessage);

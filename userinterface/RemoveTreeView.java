@@ -6,10 +6,14 @@
 package userinterface;
 
 import impresario.IModel;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Vector;
 import java.util.prefs.Preferences;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -21,7 +25,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,6 +39,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import model.Tree;
+import model.TreeVector;
 
 /**
  *
@@ -60,7 +71,15 @@ public class RemoveTreeView extends View {
         private String alertTitleSucceeded;
         private String alertSubTitleSucceeded;
         private String alertBodySucceeded;
+        
+        private TableColumn barcodeColumn;
+        private TableColumn NotesColumn;
 
+        private TableView<TreeVector> tableOfTree;
+        
+        protected Button cancel;
+        protected Button submit;
+        
         public RemoveTreeView(IModel book)
     {
         super(book, "RemoveTreeView");
@@ -93,15 +112,59 @@ public class RemoveTreeView extends View {
 	// Error message area
 	container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
-        populateFields();
+        //populateFields();
         myModel.subscribe("RemoveTreeViewError", this);
     }
 
         protected void populateFields()
 	{
             barcode.setText("");
+            getEntryTableModelValues();
 	}
 
+        protected void getEntryTableModelValues()
+        {
+            ObservableList<TreeVector> tableData = FXCollections.observableArrayList();
+            try
+                {
+                    Tree tree = (Tree)myModel.getState("Tree");
+                    Vector entryList = (Vector)tree.getResultFromDB("ModifyTree");
+                    Enumeration entries = entryList.elements();
+                    Vector<String> view = entryList;
+                    TreeVector nextTableRowData = new TreeVector(view);
+                    tableData.add(nextTableRowData);
+                    tableOfTree.setItems(tableData);
+                    tableOfTree.setEditable(true);
+                    tableOfTree.setOnMousePressed(new EventHandler<MouseEvent>() {
+                    public void handle(MouseEvent me) {
+                            Properties props = new Properties();
+                            props.setProperty("Barcode", view.get(0));
+                            props.setProperty("Notes", view.get(1));
+                            myModel.stateChangeRequest("RemoveTree", props);
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle(alerts.getString("DeletedTree1"));
+                            alert.setHeaderText(alerts.getString("DeletedTree2"));
+                            alert.setContentText(alerts.getString("DeletedTree3"));
+                            alert.showAndWait();
+                            myModel.stateChangeRequest("Done", null);
+                        }
+                    });
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(alertTitleSucceeded);
+                    alert.setHeaderText(alertSubTitleSucceeded);
+                    alert.setContentText(alertBodySucceeded);
+                    alert.showAndWait();
+                }
+            catch (Exception e) {
+                System.out.print("Enter " + e);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(alertTitle);
+                alert.setHeaderText(alertSubTitle);
+                alert.setContentText(alertBody);
+                alert.showAndWait();
+            }
+    }
+        
         private MessageView createStatusLog(String initialMessage)
 	{
             statusLog = new MessageView(initialMessage);
@@ -123,21 +186,59 @@ public class RemoveTreeView extends View {
             return container;
 	}
 
+        private void createInput2(GridPane grid, Integer pos)
+        {
+            HBox hb = new HBox(10);
+            hb.setAlignment(Pos.CENTER);
+            hb.getChildren().add(new Label("Barcode:"));
+            barcode = new TextField();
+            hb.getChildren().add(barcode);
+            grid.add(hb, 1, pos);
+        }
+        
         // Create the main form content
 	//-------------------------------------------------------------
 	private GridPane createFormContent()
-        {
+        {   
             GridPane grid = new GridPane();
             grid.setAlignment(Pos.CENTER);
             grid.setHgap(10);
             grid.setVgap(10);
             grid.setPadding(new Insets(25, 25, 25, 25));
-            barcode = createInput(grid, barcode, barcodeTitle, 0);
-            createButton(grid, submitButton, submitTitle, 4);
-            createButton(grid, doneButton, cancelTitle, 5);
+            createInput2(grid, 0);
+            tableOfTree = new TableView<TreeVector>();
+            barcodeColumn = new TableColumn("Barcode");
+            barcodeColumn.setMinWidth(240);
+            barcodeColumn.setCellValueFactory(new PropertyValueFactory<Tree, String>("barcode"));
+            NotesColumn = new TableColumn("Notes");
+            NotesColumn.setMinWidth(240);
+            NotesColumn.setCellValueFactory(new PropertyValueFactory<Tree, String>("notes"));
+            tableOfTree.getColumns().addAll(barcodeColumn, NotesColumn);
+            ScrollPane scrollPane = new ScrollPane();
+            scrollPane.setPrefSize(500, 150);
+            scrollPane.setContent(tableOfTree);
+            grid.add(scrollPane, 1, 1);
+            createButton(grid, submit, submitTitle, 1, 4, 1);
+            createButton(grid, cancel, cancelTitle, 0, 4, 2);
             return grid;
 	}
 
+        private void createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
+        {
+            button = new Button(nameButton);
+            button.setId(Integer.toString(id));
+            button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent e) {
+                    processAction(e);
+                }
+            });
+            HBox btnContainer = new HBox(10);
+            btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
+            btnContainer.getChildren().add(button);
+            grid.add(btnContainer, pos1, pos2);
+        }
+        
          private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
 	{
             Label Author = new Label(label);
@@ -172,13 +273,13 @@ public class RemoveTreeView extends View {
 	{
             Object source = evt.getSource();
             Button clickedBtn = (Button) source;
-            if (clickedBtn.getId().equals("5") == true)
+            if (clickedBtn.getId().equals("2") == true)
             {
             	myModel.stateChangeRequest("Done", null);
             }
             clearErrorMessage();
             String barcodeField = barcode.getText();
-            if (clickedBtn.getId().equals("4") == true)
+            if (clickedBtn.getId().equals("1") == true)
             {
                 if ((barcodeField == null) || (barcodeField.length() == 0))
                 {
@@ -194,12 +295,12 @@ public class RemoveTreeView extends View {
                     props.setProperty("Barcode", barcode.getText());
                     try
                     {
-                        myModel.stateChangeRequest("RemoveTree", props);
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle(alertTitleSucceeded);
-                        alert.setHeaderText(alertSubTitleSucceeded);
-                        alert.setContentText(alertBodySucceeded);
-                        alert.showAndWait();
+                        myModel.stateChangeRequest("ModifyTree", props);
+//                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//                        alert.setTitle(alertTitleSucceeded);
+//                        alert.setHeaderText(alertSubTitleSucceeded);
+//                        alert.setContentText(alertBodySucceeded);
+//                        alert.showAndWait();
                         populateFields();
                     }
                     catch (Exception ex)
@@ -216,12 +317,12 @@ public class RemoveTreeView extends View {
             cancelTitle = buttons.getString("cancelTree");
             barcodeTitle = labels.getString("barcodeTree");
             title = titles.getString("mainTitleRemoveTree");
-            alertTitle = alerts.getString("AddTreeTitle");
-            alertSubTitle = alerts.getString("AddTreeSubTitle");
+            alertTitle = alerts.getString("DeleteTreeTitle");
+            alertSubTitle = alerts.getString("DeleteTreeSubtitle");
             alertBody = alerts.getString("DeleteTreeBody");
-            alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
-            alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
-            alertBodySucceeded = alerts.getString("DeleteTreeBodySucceeded");
+            alertTitleSucceeded = alerts.getString("DeleteTreeTitleS");
+            alertSubTitleSucceeded = alerts.getString("DeleteTreeSubtitleS");
+            alertBodySucceeded = alerts.getString("DeleteTreeBodyS");
         }
 
         public void displayMessage(String message)
