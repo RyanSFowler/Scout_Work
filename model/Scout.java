@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package model;
+import exception.InvalidPrimaryKeyException;
 import java.util.Enumeration;
 import impresario.IModel;
 import impresario.IView;
@@ -45,7 +46,7 @@ public class Scout extends EntityBase implements IView, IModel {
             if (type == "Add") {
                 createAddScoutView();
             }
-            else if (type == "Modify") {
+            else if (type == "Update") {
                 createUpdateScoutView();
             }
             else if (type == "Remove") {
@@ -133,6 +134,9 @@ public class Scout extends EntityBase implements IView, IModel {
              return ModifyScout;
          }
          return null;
+}
+public void setNotes(String Notes) {
+
 }
      public void stateChangeRequest(String key, Object value)
 	{
@@ -277,20 +281,28 @@ public class Scout extends EntityBase implements IView, IModel {
           String query = "SELECT * FROM " + myTableName + " WHERE ((FirstName LIKE '" + first +	"') AND (LastName LIKE '" + last + "'));";
           System.out.println(query);
          Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
-         System.out.println(allDataRetrieved);
+         System.out.println("Vector:" +allDataRetrieved);
+         try
+               {
        if (allDataRetrieved != null)
        {
                        for (Properties p : allDataRetrieved)
                      {
                            ModifyScout b = new ModifyScout(p);
                            ModifyScout = b.getVector();
+                           System.out.println("ModifyScout:" + ModifyScout);
            }
                    }
        else
        {
-
+                       throw new InvalidPrimaryKeyException("No matching scout for : "
+                      + first + ".");
        }
+         } catch (InvalidPrimaryKeyException e) {
+       System.err.println("Error: " + e);
+         }
      }
+
 
         public void insert() {
             //System.out.print("Insert Add Tree");

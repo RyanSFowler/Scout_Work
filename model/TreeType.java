@@ -73,7 +73,7 @@ public class TreeType extends EntityBase implements IView, IModel {
             }
             swapToView(currentScene);
         }
-     
+
      public void createUpdateTreeTypeView() {
             Scene currentScene = (Scene)myViews.get("UpdateTreeTypeView");
 
@@ -125,7 +125,7 @@ public class TreeType extends EntityBase implements IView, IModel {
 		System.err.println("Error: " + e);
 	    }
 	}
-     
+
      public Vector<String> getResultFromDB(String key)
 	{
             if (key.equals("ModifyTreeType")) {
@@ -133,7 +133,7 @@ public class TreeType extends EntityBase implements IView, IModel {
             }
             return null;
 	}
-     
+
      public void stateChangeRequest(String key, Object value)
 	{
             if (key.equals("Done") == true)

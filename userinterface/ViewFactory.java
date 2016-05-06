@@ -19,6 +19,10 @@ public class ViewFactory {
 		{
 			return new UpdateScoutView(model);
 		}
+                else if(viewName.equals("UpdateScoutView2") == true)
+		{
+			return new UpdateScoutView2(model);
+		}
 		else if(viewName.equals("RemoveScoutView") == true)
 		{
 			return new RemoveScoutView(model);
