@@ -66,19 +66,13 @@ public abstract class EntityBase extends Persistable
 
 		// save our table name for later
 		myTableName = tablename;
-
-                
-                
 		// extract the schema from the database, calls methods in subclasses
 		initializeSchema(myTableName);
-
                 
 		// create a place to hold our state from the database
 		persistentState = new Properties();
-
 		// create a registry for subscribers
 		myRegistry = new ModelRegistry("EntityBase." + tablename);	// for now
-
 		// initialize the reference count
 		referenceCount = 0;
 		// indicate the data in persistentState matches the database contents

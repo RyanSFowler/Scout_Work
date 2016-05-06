@@ -24,9 +24,23 @@ public class EntityBaseFactory {
             if(transCategory.equals("TreeType")){
                 retValue = new TreeType(myTreeLotCoordinator, transType);
             }
+
+//            if(transCategory.equals("Sales") && !transType.equals("Add")){
+//                retValue = new Session(myTreeLotCoordinator, transType);
+
             if(transCategory.equals("Sales")){
-                retValue = new Session(myTreeLotCoordinator, transType);
+            	if(transType.equals("Sell")){
+            		retValue = new Transaction(myTreeLotCoordinator, transType);
+            	}
+            	else{
+            		retValue = new Session(myTreeLotCoordinator, transType);
+            	}
+
             }
+            else if(transCategory.equals("Sales") && transType.equals("Add")){
+                retValue = new Transaction(myTreeLotCoordinator, transType);
+            }
+
 
 
 		/*if(transCategory.equals("Scout")){

@@ -48,7 +48,7 @@ import model.ModifyTree;
  *
  * @author florianjousselin
  */
-public class UpdateTreeView extends View {
+public class UpdateTreeView2 extends View {
 
     private TextField barcode;
     private TextArea notes;
@@ -56,7 +56,7 @@ public class UpdateTreeView extends View {
     protected Button submit;
     private Button searchButton;
     private Button doneButton;
-
+    
     private Locale locale = new Locale("en", "CA");
     private ResourceBundle buttons;
     private ResourceBundle titles;
@@ -70,16 +70,16 @@ public class UpdateTreeView extends View {
     private String alertSubTitle;
     private String alertBody;
     private String description;
-
+    
     private TableView<TreeVector> tableOfTree;
-
+    
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
     private TableColumn barcodeColumn;
     private TableColumn NotesColumn;
-
-    public UpdateTreeView(IModel model) {
+    
+    public UpdateTreeView2(IModel model) {
         super(model, "UpdateTreeView");
         Preferences prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
         String langage = prefs.get("langage", null);
@@ -97,20 +97,20 @@ public class UpdateTreeView extends View {
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
         refreshFormContents();
         displayWindow();
-
+        
     }
-
-
+    
+    
     public void displayWindow()
     {
         VBox container = new VBox(10);
-        container.setAlignment(Pos.CENTER);
+        container.setAlignment(Pos.CENTER);	
         container.setPadding(new Insets(15, 5, 5, 5));
         container.getChildren().add(createTitle());
 	container.getChildren().add(createFormContent());
 	getChildren().add(container);
     }
-
+    
     public Node createTitle()
     {
         HBox container = new HBox();
@@ -123,9 +123,9 @@ public class UpdateTreeView extends View {
         container.getChildren().add(titleText);
         return container;
     }
-
+    
     private GridPane createFormContent()
-    {
+    {        
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
 	grid.setHgap(10);
@@ -134,64 +134,28 @@ public class UpdateTreeView extends View {
 
 	createInput2(grid, 0);
 
-	tableOfTree = new TableView<TreeVector>();
-	barcodeColumn = new TableColumn("Barcode");
-	barcodeColumn.setMinWidth(240);
-	barcodeColumn.setCellValueFactory(new PropertyValueFactory<Tree, String>("barcode"));
-	NotesColumn = new TableColumn("Notes");
-	NotesColumn.setMinWidth(240);
-	NotesColumn.setCellValueFactory(new PropertyValueFactory<Tree, String>("notes"));
-
-	tableOfTree.getColumns().addAll(barcodeColumn, NotesColumn);
-	ScrollPane scrollPane = new ScrollPane();
-	scrollPane.setPrefSize(500, 150);
-	scrollPane.setContent(tableOfTree);
-
-	grid.add(scrollPane, 1, 1);
-
+        
 	createButton(grid, submit, submitTitle, 1, 4, 1);
 	createButton(grid, cancel, cancelTitle, 0, 4, 2);
 
 
-
+        
 	return grid;
-
+        
     }
-
-
+    
+    
     private void createInput2(GridPane grid, Integer pos)
     {
 	HBox hb = new HBox(10);
 	hb.setAlignment(Pos.CENTER);
-	hb.getChildren().add(new Label("Barcode:"));
-	barcode = new TextField();
-	hb.getChildren().add(barcode);
+	hb.getChildren().add(new Label("Notes:"));
+	notes = new TextArea();
+	hb.getChildren().add(notes);
 	grid.add(hb, 1, pos);
     }
-
-    private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
-    {
-        Label Author = new Label(label);
-        GridPane.setHalignment(Author, HPos.RIGHT);
-        grid.add(Author, 0, pos);
-        textfield = new TextField();
-        grid.add(textfield, 1, pos);
-        return textfield;
-    }
-
-    private TextArea createInputTextArea(GridPane grid, TextArea textarea, String label, Integer pos)
-    {
-        Label Author = new Label(label);
-        GridPane.setHalignment(Author, HPos.RIGHT);
-        grid.add(Author, 0, pos);
-        textarea = new TextArea();
-        textarea.setDisable(false);
-        textarea.setWrapText(true);
-        textarea.setPrefSize(300, 100);
-        grid.add(textarea, 1, pos);
-        return textarea;
-    }
-
+    
+    
     private void createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
     {
         button = new Button(nameButton);
@@ -207,14 +171,14 @@ public class UpdateTreeView extends View {
         btnContainer.getChildren().add(button);
         grid.add(btnContainer, pos1, pos2);
     }
-
+    
     public void processAction(Event evt)
     {
         Object source = evt.getSource();
         Button clickedBtn = (Button) source;
         if (clickedBtn.getId().equals("1") == true)
         {
-            if (barcode.getText().isEmpty() == true)
+            if (notes.getText().isEmpty() == true)
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -224,13 +188,16 @@ public class UpdateTreeView extends View {
             }
             else
             {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(alertTitleSucceeded);
+                alert.setHeaderText(alertSubTitleSucceeded);
+                alert.setContentText(alertBodySucceeded);
+                alert.showAndWait();
                 Properties props = new Properties();
-                props.setProperty("Barcode", barcode.getText());
+                props.setProperty("Notes", notes.getText());
                 try
                 {
-                    myModel.stateChangeRequest("ModifyTree", props);
-                    populateFields();
-
+                    myModel.stateChangeRequest("ModifyTree3", props);
                 }
                 catch (Exception ex)
                 {
@@ -243,7 +210,7 @@ public class UpdateTreeView extends View {
             myModel.stateChangeRequest("Done", null);
         }
     }
-
+    
     private void refreshFormContents()
     {
         submitTitle = buttons.getString("submitModifyTree");
@@ -251,61 +218,19 @@ public class UpdateTreeView extends View {
         barcodeTitle = labels.getString("barcodeTree");
         description = labels.getString("notes");
         title = titles.getString("mainTitleModifyTree");
-        alertTitle = alerts.getString("UpdateCheckTitle");
-        alertSubTitle = alerts.getString("UpdateCheckSubTitle");
-        alertBody = alerts.getString("UpdateCheckBody");
-        alertTitleSucceeded = alerts.getString("UpdateCheckTitleS");
-        alertSubTitleSucceeded = alerts.getString("UpdateCheckSubTitleS");
-        alertBodySucceeded = alerts.getString("UpdateCheckBodyS");
+        alertTitle = alerts.getString("AddTreeTitle");
+        alertSubTitle = alerts.getString("AddTreeSubTitle");
+        alertBody = alerts.getString("AddTreeBody");
+        alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
+        alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("UpdateTreeBodySucceeded");
     }
-
-    protected void getEntryTableModelValues()
-    {
-	ObservableList<TreeVector> tableData = FXCollections.observableArrayList();
-	try
-	    {
-		Tree tree = (Tree)myModel.getState("Tree");
-		Vector entryList = (Vector)tree.getResultFromDB("ModifyTree");
-		Enumeration entries = entryList.elements();
-                Vector<String> view = entryList;
-                TreeVector nextTableRowData = new TreeVector(view);
-                tableData.add(nextTableRowData);
-                tableOfTree.setItems(tableData);
-                tableOfTree.setEditable(true);
-
-                tableOfTree.setOnMousePressed(new EventHandler<MouseEvent>() {
-                public void handle(MouseEvent me) {
-                        Properties props = new Properties();
-                        props.setProperty("Barcode", view.get(0));
-                        props.setProperty("Notes", view.get(1));
-                        myModel.stateChangeRequest("ModifyTree2", props);
-                    }
-                });
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(alertTitleSucceeded);
-                alert.setHeaderText(alertSubTitleSucceeded);
-                alert.setContentText(alertBodySucceeded);
-                alert.showAndWait();
-	    }
-	catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(alertTitle);
-                alert.setHeaderText(alertSubTitle);
-                alert.setContentText(alertBody);
-                alert.showAndWait();
-	}
-    }
-
-    protected void populateFields()
-    {
-        barcode.setText("");
-        getEntryTableModelValues();
-    }
-
+    
+    
     @Override
     public void updateState(String key, Object value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-
+    
+    
 }

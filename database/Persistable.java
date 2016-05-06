@@ -590,7 +590,7 @@ abstract public class Persistable
 				System.err.println("Persistable.updatePersistentState - Could not connect to database!");
 				return null;
 			}
-
+                        
 	    	// construct a SQL statement from the passed parameters
 			SQLUpdateStatement theSQLStatement = new SQLUpdateStatement(schema, updateValues, whereValues);
 			// DEBUG System.out.println("SQL Statement: " + theSQLStatement.toString());
@@ -601,7 +601,7 @@ abstract public class Persistable
 				System.err.println("Persistable.updatePersistentState - Could not create SQL Statement!");
 				return null;
 			}
-
+                        
 			// Once a connection has been established we can create an instance
 			// of Statement, through which we will send queries to the database.
 			// Only the Global Pool connection should be used!
@@ -618,7 +618,7 @@ abstract public class Persistable
 			// DEBUG: throw new SQLException("Testing only");
 
 			
-
+                        
 			return new Integer(returnCode);
 		}
 		catch (SQLException sqle)

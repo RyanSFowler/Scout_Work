@@ -19,6 +19,10 @@ public class ViewFactory {
 		{
 			return new UpdateScoutView(model);
 		}
+                else if(viewName.equals("UpdateScoutView2") == true)
+		{
+			return new UpdateScoutView2(model);
+		}
 		else if(viewName.equals("RemoveScoutView") == true)
 		{
 			return new RemoveScoutView(model);
@@ -30,6 +34,10 @@ public class ViewFactory {
 		else if(viewName.equals("UpdateTreeView") == true)
 		{
 			return new UpdateTreeView(model);
+		}
+                else if(viewName.equals("UpdateTreeView2") == true)
+		{
+			return new UpdateTreeView2(model);
 		}
 		else if(viewName.equals("RemoveTreeView") == true)
 		{
@@ -52,10 +60,10 @@ public class ViewFactory {
 		{
 			return new TransactionView(model);
 		}
-/*		else if(viewName.equals("CloseShiftView") == true)
+		else if(viewName.equals("CloseSessionView") == true)
 		{
 			return new CloseSessionView(model);
-		}
+		}/*
 		else if(viewName.equals("RecordSaleView") == true)
 		{
 			return new RecordSaleView(model);

@@ -116,7 +116,7 @@ public class TreeLotCoordinatorView extends View
 		// STEP 0: Be sure you tell your model what keys you are interested in
 		myModel.subscribe("LoginError", this);
 	}
-        
+
         private void autoInternalization()
         {
             if (System.getProperty("user.language").equals("fr") == true)
@@ -316,7 +316,7 @@ public class TreeLotCoordinatorView extends View
 	  		     	processAction(e);
 	       	     }
  			});
- 	
+
 
  		VBox treeTypeContainer = new VBox(10);
  		treeTypeContainer.setAlignment(Pos.TOP_CENTER);
@@ -365,6 +365,11 @@ public class TreeLotCoordinatorView extends View
 
 	  		     @Override
 	  		     public void handle(ActionEvent e) {
+
+				//transType = "Add";
+
+	  		    	transType = "Sell";
+
 	  		     	processAction(e);
 	       	     }
  			});

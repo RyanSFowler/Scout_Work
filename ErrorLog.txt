@@ -159,4 +159,46 @@
 [4/12/16 11:10 PM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.util.MissingResourceException: Can't find resource for bundle java.util.PropertyResourceBundle, key RemoveScoutTitleSucceeded>
 [4/12/16 11:10 PM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.util.MissingResourceException: Can't find resource for bundle java.util.PropertyResourceBundle, key RemoveScoutTitleSucceeded>
 [4/12/16 11:10 PM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.util.MissingResourceException: Can't find resource for bundle java.util.PropertyResourceBundle, key RemoveScoutTitleSucceeded>
-[4/26/16 10:43 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:53 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:53 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:53 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:53 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:53 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:53 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:53 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:57 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:58 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:58 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 1:58 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:01 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:01 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:01 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:01 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:01 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:01 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:04 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:04 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:04 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:04 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:05 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:05 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:05 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:08 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:08 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:08 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:08 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:08 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:09 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>
+[5/5/16 2:09 AM]|TreeLotCoordinator|createTransaction|Error|NOTAG|null<Transaction Creation Failure: Unrecognized transaction java.lang.NullPointerException>

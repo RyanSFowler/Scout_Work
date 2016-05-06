@@ -25,11 +25,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -37,17 +41,20 @@ import javafx.scene.text.TextAlignment;
  */
 public class TransactionView extends View {
 
-    private TextField transTypeField;
+    private ComboBox transTypeField;
     private TextField barcodeField;
     private TextField transAmountField;
-    private TextField paymentField;
+    private ComboBox paymentField;
     private TextField custNameField;
     private TextField custPhoneField;
     private TextField custEmailField;
     private TextField dateField;
     private TextField timeField;
+    private DateFormat df;
+    private DateFormat tf;
     protected Button cancel;
     protected Button submit;
+    private Date dateobj = new Date();
 
     private Locale locale = new Locale("en", "CA");
     private ResourceBundle buttons;
@@ -66,17 +73,23 @@ public class TransactionView extends View {
     private String custEmailTitle;
     private String dateTitle;
     private String timeTitle;
-
+    private String cashString;
+    private String checkString;
+    private String dateStamp;
+    private String timeStamp;
     private String title;
     private String alertTitle;
     private String alertSubTitle;
     private String alertBody;
+    private String transactionTypeString;
 
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
 
     private String description;
+    private String selectPayment;
+    private String selectType;
 
 
     public TransactionView(IModel model) {
@@ -95,6 +108,8 @@ public class TransactionView extends View {
         titles = ResourceBundle.getBundle("TitlesBundle", locale);
         labels = ResourceBundle.getBundle("LabelsBundle", locale);
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
+        timeStamp = new SimpleDateFormat(labels.getString("timeFormat")).format(new Date());
+        dateStamp = new SimpleDateFormat(labels.getString("dateFormat")).format(new Date());
         refreshFormContents();
         displayWindow();
 
@@ -139,10 +154,27 @@ public class TransactionView extends View {
         grid.setPadding(new Insets(25, 25, 25, 25));
 
 
-        transTypeField = createInput(grid, transTypeField, transTypeTitle, 0);
+        transTypeField =new ComboBox();
+        transTypeField.getItems().addAll(
+          transactionTypeString
+        );
+        transTypeField.setPromptText(selectType);
+        Label b = new Label(transTypeTitle);
+        GridPane.setHalignment(b, HPos.RIGHT);
+        grid.add(b,0,0);
+        grid.add(transTypeField,1,0);
         barcodeField = createInput(grid, barcodeField, barcodeTitle, 1);
         transAmountField = createInput(grid, transAmountField, transAmountTitle, 2);
-        paymentField = createInput(grid, paymentField, paymentTitle, 3);
+        paymentField =new ComboBox();
+        paymentField.getItems().addAll(
+          cashString,
+          checkString
+        );
+        paymentField.setPromptText(selectPayment);
+        Label a = new Label(paymentTitle);
+        GridPane.setHalignment(a, HPos.RIGHT);
+        grid.add(a,0,3);
+        grid.add(paymentField,1,3);
         custNameField = createInput(grid, custNameField, custNameTitle, 4);
         custPhoneField = createInput(grid, custPhoneField, custPhoneTitle, 5);
         custEmailField = createInput(grid, custEmailField, custEmailTitle, 6);
@@ -194,21 +226,17 @@ public class TransactionView extends View {
 
     public void processAction(Event evt)
     {
-        String mI;
+        int sessionId = 0;
         Object source = evt.getSource();
         Button clickedBtn = (Button) source;
         if (clickedBtn.getId().equals("1") == true)
         {
-            /*if(middleInitialField.getText().isEmpty() == true)
-            {
-              mI="";
-            }
-            else
-            {
-              mI = middleInitialField.getText();
-            }
-            if ((firstNameField.getText().isEmpty() == true) || (lastNameField.getText().isEmpty() == true)
-                  || (dobField.getText().isEmpty() == true) || (phoneNumField.getText().isEmpty() == true) || (emailField.getText().isEmpty() == true))
+          if(sessionId != -1){
+
+            if ((barcodeField.getText().isEmpty() == true) || (transAmountField.getText().isEmpty() == true)
+                  || (custNameField.getText().isEmpty() == true) || (custPhoneField.getText().isEmpty() == true)
+                  || (custEmailField.getText().isEmpty() == true) || (dateField.getText().isEmpty() == true)
+                  || (timeField.getText().isEmpty() == true)  )
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -218,41 +246,51 @@ public class TransactionView extends View {
             }
             else
             {
+                String sessionString = ""+ sessionId;
+                System.out.println(sessionString+ "\n"+(String)transTypeField.getValue().toString()+"\n"+ barcodeField.getText()+ "\n"+ transAmountField.getText());
+                System.out.println((String)paymentField.getValue().toString()+ "\n"+ custNameField.getText()+ "\n"+ custPhoneField.getText()+ "\n"+custEmailField.getText());
+                System.out.println(dateField.getText() + "\n"+timeField.getText());
                 Properties props = new Properties();
-                props.setProperty("FirstName", firstNameField.getText());
-                props.setProperty("MiddleInitial", mI);
-                props.setProperty("LastName", lastNameField.getText());
-                props.setProperty("DateOfBirth", dobField.getText());
-                props.setProperty("PhoneNumber", phoneNumField.getText());
-                props.setProperty("Email", emailField.getText());
-                props.setProperty("Status", "Active");
+                props.setProperty("SessionId", sessionString);
+                props.setProperty("TransactionType",(String)transTypeField.getValue().toString());
+                props.setProperty("Barcode", barcodeField.getText());
+                props.setProperty("TransactionAmount", transAmountField.getText());
+                props.setProperty("PaymentMethod", (String)paymentField.getValue().toString());
+                props.setProperty("CustomerName", custNameField.getText());
+                props.setProperty("CustomerPhone", custPhoneField.getText());
+                props.setProperty("CustomerEmail", custEmailField.getText());
+                props.setProperty("TransactionDate", dateField.getText());
+                props.setProperty("TransactionTime", timeField.getText());
                 try
                 {
-                    myModel.stateChangeRequest("AddScout", props);
+
+                    myModel.stateChangeRequest("Add", props);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(alertTitleSucceeded);
                     alert.setHeaderText(alertSubTitleSucceeded);
                     alert.setContentText(alertBodySucceeded);
                     alert.showAndWait();
-                    populateFields();
+                    //populateFields();
                 }
                 catch (Exception ex)
                 {
-                    System.out.print("Error New Scout Add");
+                    System.out.print("Error Add Transaction");
                 }
             }
+          }
         }
-        else if (clickedBtn.getId().equals("2") == true)
+        if (clickedBtn.getId().equals("2") == true)
         {
             myModel.stateChangeRequest("Done", null);
-        }*/
-    }
+        }
+      }
 
     private void refreshFormContents()
     {
         submitTitle = buttons.getString("submitAddScout");
         cancelTitle = buttons.getString("cancelAddScout");
-
+        cashString =  labels.getString("cashString");
+        checkString = labels.getString("checkString");
         transTypeTitle = labels.getString("tranType");
         barcodeTitle = labels.getString("barcodeTree");
         transAmountTitle = labels.getString("transAmount");
@@ -262,32 +300,33 @@ public class TransactionView extends View {
         custEmailTitle = labels.getString("custEmail");
         dateTitle = labels.getString("date");
         timeTitle = labels.getString("time");
+        transactionTypeString = labels.getString("transactionTypeString");
 
 
         title = titles.getString("mainTitleTransaction");
 
-        alertTitle = alerts.getString("AddScoutTitle");
-        alertSubTitle = alerts.getString("AddScoutSubTitle");
-        alertBody = alerts.getString("AddScoutBody");
-        alertTitleSucceeded = alerts.getString("AddScoutTitleSucceeded");
-        alertSubTitleSucceeded = alerts.getString("AddScoutSubTitleSucceeded");
-        alertBodySucceeded = alerts.getString("AddScoutBodySucceeded");
+        alertTitle = alerts.getString("AddTransactionTitle");
+        alertSubTitle = alerts.getString("AddTransactionSubTitle");
+        alertBody = alerts.getString("AddTransactionBody");
+        alertTitleSucceeded = alerts.getString("AddTransactionTitleSuccess");
+        alertSubTitleSucceeded = alerts.getString("AddTransactionSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("AddTransactionBodySucceeded");
+        
+        selectPayment = buttons.getString("SelectPayment");
+        selectType = buttons.getString("SelectType");
     }
 
 
     protected void populateFields()
     {
 
-      transTypeField.setText("");
       barcodeField.setText("");
       transAmountField.setText("");
-      paymentField.setText("");
       custNameField.setText("");
       custPhoneField.setText("");
       custEmailField.setText("");
-      dateField.setText("");
-      timeField.setText("");
-
+      dateField.setText(dateStamp);
+      timeField.setText(timeStamp);
     }
 
     @Override

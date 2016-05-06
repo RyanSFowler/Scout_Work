@@ -23,7 +23,7 @@ public class Transaction extends EntityBase implements IView, IModel {
      protected Stage myStage;
      protected TreeLotCoordinator myTreeLotCoordinator;
      protected Properties dependencies;
-     private static final String myTableName = "TRANSACTIOON";
+     private static final String myTableName = "TRANSACTION";
      private String updateStatusMessage = "";
 
 
@@ -32,9 +32,13 @@ public class Transaction extends EntityBase implements IView, IModel {
             myTreeLotCoordinator = l;
             persistentState = new Properties();
             setDependencies();
-            if (type == "Add") {
+
+//            createTransactionView();
+
+            if (type == "Sell") {
                 createTransactionView();
             }
+
         }
         public Transaction(Properties props)
 	      {
@@ -142,11 +146,10 @@ public class Transaction extends EntityBase implements IView, IModel {
             dependencies.put("CustomerEmail", persistentState.getProperty("CustomerEmail"));
             dependencies.put("TransactionDate", persistentState.getProperty("TransactionDate"));
             dependencies.put("TransactionTime", persistentState.getProperty("TransactionTime"));
-            //System.out.print("dependencies:" + dependencies);
+            System.out.print("dependencies:" + dependencies);
             try {
                 int i = insertAutoIncrementalPersistentState(this.mySchema, dependencies);
             } catch (SQLException ex) {
-                //System.out.print("Error:" + ex);
                 Logger.getLogger(Tree.class.getName()).log(Level.SEVERE, null, ex);
             }
 	}

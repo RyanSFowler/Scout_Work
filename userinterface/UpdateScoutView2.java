@@ -6,10 +6,14 @@
 package userinterface;
 
 import impresario.IModel;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Vector;
 import java.util.prefs.Preferences;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -20,8 +24,14 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,52 +40,59 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import model.Scout;
+import model.ScoutVector;
+import model.ModifyScout;
+
 
 /**
  *
  * @author florianjousselin
  */
-public class ModifyScoutView extends View {
+public class UpdateScoutView2 extends View {
 
-    private TextField firstNameField;
-    private TextField lastNameField;
-    private TextField middleInitialField;
-    private TextField dobField;
-    private TextField phoneNumField;
-    private TextField emailField;
-    protected Button cancel;
-    protected Button submit;
+  private TextField firstNameField;
+  private TextField lastNameField;
+  private TextField middleInitialField;
+  private TextField dobField;
+  private TextField phoneNumField;
+  private TextField emailField;
+  private TextField statusField;
+  protected Button cancel;
+  protected Button submit;
 
-    private Locale locale = new Locale("en", "CA");
-    private ResourceBundle buttons;
-    private ResourceBundle titles;
-    private ResourceBundle labels;
-    private ResourceBundle alerts;
-    private String cancelTitle;
-    private String submitTitle;
+  private Locale locale = new Locale("en", "CA");
+  private ResourceBundle buttons;
+  private ResourceBundle titles;
+  private ResourceBundle labels;
+  private ResourceBundle alerts;
+  private String cancelTitle;
+  private String submitTitle;
+  private String firstNameTitle;
+  private String lastNameTitle;
+  private String middleTitle;
+  private String dobTitle;
+  private String phoneTitle;
+  private String emailTitle;
+  private String statusTitle= "Status";//change
+  private String mI;
 
-    private String firstNameTitle;
-    private String lastNameTitle;
-    private String middleTitle;
-    private String dobTitle;
-    private String phoneTitle;
-    private String emailTitle;
+  private String title;
+  private String alertTitle;
+  private String alertSubTitle;
+  private String alertBody;
 
-    private String title;
-    private String alertTitle;
-    private String alertSubTitle;
-    private String alertBody;
+  private TableView<ScoutVector> tableOfScouts;
 
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
+    private TableColumn barcodeColumn;
+    private TableColumn NotesColumn;
 
-    private String description;
-
-
-    public ModifyScoutView(IModel model) {
-        super(model, "ModifyScoutView");
-        Preferences prefs = Preferences.userNodeForPackage(ModifyScoutView.class);
+    public UpdateScoutView2(IModel model) {
+        super(model, "UpdateScoutView");
+        Preferences prefs = Preferences.userNodeForPackage(UpdateScoutView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -95,22 +112,24 @@ public class ModifyScoutView extends View {
     }
 
 
-
     public void displayWindow()
     {
         VBox container = new VBox(10);
         container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(15, 5, 5, 5));
-
         container.getChildren().add(createTitle());
 	container.getChildren().add(createFormContent());
-
-        //container.getChildren().add(createStatusLog("                                            "));
 	getChildren().add(container);
-        populateFields();
-        myModel.subscribe("LoginError", this);
     }
-
+    private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
+    {
+        Label Author = new Label(label);
+        GridPane.setHalignment(Author, HPos.RIGHT);
+        grid.add(Author, 0, pos);
+        textfield = new TextField();
+        grid.add(textfield, 1, pos);
+        return textfield;
+    }
     public Node createTitle()
     {
         HBox container = new HBox();
@@ -128,43 +147,31 @@ public class ModifyScoutView extends View {
     {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
+	grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        firstNameField = createInput(grid, firstNameField, firstNameTitle, 0);
-        middleInitialField = createInput(grid, middleInitialField, middleTitle, 1);
-        lastNameField = createInput(grid, lastNameField, lastNameTitle, 2);
-        dobField = createInput(grid, dobField, dobTitle, 3);
-        phoneNumField = createInput(grid, phoneNumField, phoneTitle, 4);
-        emailField = createInput(grid, emailField, emailTitle, 5);
-        createButton(grid, submit, submitTitle, 1, 6, 1);
-        createButton(grid, cancel, cancelTitle, 0, 6, 2);
-        return grid;
+  firstNameField = createInput(grid, firstNameField, firstNameTitle, 0);
+  middleInitialField = createInput(grid, middleInitialField, middleTitle, 1);
+  lastNameField = createInput(grid, lastNameField, lastNameTitle, 2);
+  dobField = createInput(grid, dobField, dobTitle, 3);
+  phoneNumField = createInput(grid, phoneNumField, phoneTitle, 4);
+  emailField = createInput(grid, emailField, emailTitle, 5);
+  statusField = createInput(grid, statusField, statusTitle, 6);
+
+
+	createButton(grid, submit, submitTitle, 1, 7, 1);
+	createButton(grid, cancel, cancelTitle, 0, 7, 2);
+
+
+
+	return grid;
+
     }
 
-    private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
-    {
-        Label Author = new Label(label);
-        GridPane.setHalignment(Author, HPos.RIGHT);
-        grid.add(Author, 0, pos);
-        textfield = new TextField();
-        grid.add(textfield, 1, pos);
-        return textfield;
-    }
 
-    private TextArea createInputTextArea(GridPane grid, TextArea textarea, String label, Integer pos)
-    {
-        Label Author = new Label(label);
-        GridPane.setHalignment(Author, HPos.RIGHT);
-        grid.add(Author, 0, pos);
-        textarea = new TextArea();
-        textarea.setDisable(false);
-        textarea.setWrapText(true);
-        textarea.setPrefSize(300, 100);
-        grid.add(textarea, 1, pos);
-        return textarea;
-    }
+
+
 
     private void createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
     {
@@ -184,21 +191,20 @@ public class ModifyScoutView extends View {
 
     public void processAction(Event evt)
     {
-        String mI;
         Object source = evt.getSource();
         Button clickedBtn = (Button) source;
         if (clickedBtn.getId().equals("1") == true)
         {
-            if(middleInitialField.getText().isEmpty() == true)
-            {
-              mI="";
-            }
-            else
-            {
-              mI = middleInitialField.getText();
-            }
-            if ((firstNameField.getText().isEmpty() == true) || (lastNameField.getText().isEmpty() == true)
-                 || (dobField.getText().isEmpty() == true) || (phoneNumField.getText().isEmpty() == true) || (emailField.getText().isEmpty() == true))
+          if(middleInitialField.getText().isEmpty() == true)
+          {
+            mI="";
+          }
+          else
+          {
+            mI = middleInitialField.getText();
+          }
+          if ((firstNameField.getText().isEmpty() == true) || (lastNameField.getText().isEmpty() == true)
+                || (dobField.getText().isEmpty() == true) || (phoneNumField.getText().isEmpty() == true) || (emailField.getText().isEmpty() == true))
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -208,27 +214,26 @@ public class ModifyScoutView extends View {
             }
             else
             {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(alertTitleSucceeded);
+                alert.setHeaderText(alertSubTitleSucceeded);
+                alert.setContentText(alertBodySucceeded);
+                alert.showAndWait();
                 Properties props = new Properties();
                 props.setProperty("FirstName", firstNameField.getText());
-                props.setProperty("MiddleInitial", mI);
+                props.setProperty("MiddleInitial", middleInitialField.getText());
                 props.setProperty("LastName", lastNameField.getText());
                 props.setProperty("DateOfBirth", dobField.getText());
                 props.setProperty("PhoneNumber", phoneNumField.getText());
                 props.setProperty("Email", emailField.getText());
-                props.setProperty("Status", "Active");
+                props.setProperty("Status", statusField.getText());
                 try
                 {
-                    myModel.stateChangeRequest("ModifyScout", props);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(alertTitleSucceeded);
-                    alert.setHeaderText(alertSubTitleSucceeded);
-                    alert.setContentText(alertBodySucceeded);
-                    alert.showAndWait();
-                    populateFields();
+                    myModel.stateChangeRequest("ModifyScout3", props);
                 }
                 catch (Exception ex)
                 {
-                    System.out.print("Error New Scout Modify");
+                    System.out.print("An Error occured: " + ex);
                 }
             }
         }
@@ -240,34 +245,24 @@ public class ModifyScoutView extends View {
 
     private void refreshFormContents()
     {
-        submitTitle = buttons.getString("submitModifyScout");
-        cancelTitle = buttons.getString("cancelAddScout");
+        submitTitle = buttons.getString("submitModifyTree");
+        cancelTitle = buttons.getString("cancelTree");
         firstNameTitle = labels.getString("firstName");
         lastNameTitle = labels.getString("lastName");
         middleTitle = labels.getString("middle");
         dobTitle = labels.getString("dateOfBirth");
         phoneTitle = labels.getString("phone");
         emailTitle = labels.getString("email");
+        statusTitle = labels.getString("status");
         title = titles.getString("mainTitleModifyScout");
-        alertTitle = alerts.getString("ModifyScoutTitle");
-        alertSubTitle = alerts.getString("ModifyScoutSubTitle");
-        alertBody = alerts.getString("ModifyScoutBody");
-        alertTitleSucceeded = alerts.getString("ModifyScoutTitleSucceeded");
-        alertSubTitleSucceeded = alerts.getString("ModifyScoutSubTitleSucceeded");
-        alertBodySucceeded = alerts.getString("ModifyScoutBodySucceeded");
+        alertTitle = alerts.getString("AddTreeTitle");
+        alertSubTitle = alerts.getString("AddTreeSubTitle");
+        alertBody = alerts.getString("AddTreeBody");
+        alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
+        alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("UpdateTreeBodySucceeded");
     }
 
-
-    protected void populateFields()
-    {
-        firstNameField.setText("");
-        lastNameField.setText("");
-        middleInitialField.setText("");
-        dobField.setText("");
-        phoneNumField.setText("");
-        emailField.setText("");
-
-    }
 
     @Override
     public void updateState(String key, Object value) {

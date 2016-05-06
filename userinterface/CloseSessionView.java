@@ -36,25 +36,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 
-public class OpenSessionView extends View {
+public class CloseSessionView extends View {
 
-    private TextField date;
-    private TextField startTime;
-    private TextField endTime;
-    private TextField startCash;
     private TextArea notes;
-    private ComboBox scout1;
-    private ComboBox scout2;
-    private ComboBox scout3;
-    private int i =0;
-    private TextField scout1Companion;
-    private TextField scout2Companion;
-    private TextField scout3Companion;
+    private TextField cashCount;
+    private TextField checkCount;
+    private TextField startCash;
     protected Button cancel;
     protected Button submit;
 
@@ -63,8 +52,15 @@ public class OpenSessionView extends View {
     private ResourceBundle titles;
     private ResourceBundle labels;
     private ResourceBundle alerts;
-    private String cancelTitle;
+    private String notesTitle;
+    private String cashCountTitle;
+    private String checkCountTitle;
+    private String cashTitle;
+    private String checkTitle;
     private String submitTitle;
+    private String cancelTitle;
+    private int checkAmount = 0;
+    private int cashAmount= 0;
     private String title;
     private String alertTitle;
     private String alertSubTitle;
@@ -75,21 +71,14 @@ public class OpenSessionView extends View {
     private String alertBodySucceeded;
 
     private String description;
-    private String sessionDate;
-    private String startingTime;
-    private String endingTime;
-    private String startingCash;
-    private String companion;
-    private String selectScout;
-    private String dateStamp;
-    private String timeStamp;
-    private String startTime1;
-    private String date1;
+    private String calculated;
+    private String counted;
+    private String checkcalculated;
+    private String checkcounted;
 
-
-    public OpenSessionView(IModel model) {
-        super(model, "OpenSessionView");
-        Preferences prefs = Preferences.userNodeForPackage(OpenSessionView.class);
+    public CloseSessionView(IModel model) {
+        super(model, "CloseSessionView");
+        Preferences prefs = Preferences.userNodeForPackage(CloseSessionView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -103,8 +92,6 @@ public class OpenSessionView extends View {
         titles = ResourceBundle.getBundle("TitlesBundle", locale);
         labels = ResourceBundle.getBundle("LabelsBundle", locale);
         alerts = ResourceBundle.getBundle("AlertsBundle", locale);
-        dateStamp = new SimpleDateFormat(labels.getString("dateFormat")).format(new Date());
-        timeStamp = new SimpleDateFormat(labels.getString("timeFormat")).format(new Date());
         refreshFormContents();
         displayWindow();
 
@@ -143,29 +130,35 @@ public class OpenSessionView extends View {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        date = createInput(grid, date, sessionDate, 0);
-        startTime = createInput(grid, startTime, startingTime, 1);
-        endTime = createInput(grid, startTime, endingTime, 2);
-        startCash = createInput(grid, startCash, startingCash, 3);
-        notes = new TextArea();
-        notes = createInputTextArea(grid, notes, description, 4);
-        scout1 = new ComboBox((ObservableList)(((Session) myModel).findAllScouts()));
-        scout1.setPromptText(selectScout);
-        grid.add(scout1, 0, 5);
-        scout1Companion = createInput(grid, scout1Companion, companion, 2, 5);
-        scout2 = new ComboBox((ObservableList)(((Session) myModel).findAllScouts()));
-        scout2.setPromptText(selectScout);
-        grid.add(scout2, 0, 6);
-        scout2Companion = createInput(grid, scout2Companion, companion, 2, 6);
-        scout3 = new ComboBox((ObservableList)(((Session) myModel).findAllScouts()));
-        scout3.setPromptText(selectScout);
-        grid.add(scout3, 0, 7);
-        scout3Companion = createInput(grid, scout3Companion, companion, 2, 7);
-        createButton(grid, submit, submitTitle, 1, 9, 1);
-        createButton(grid, cancel, cancelTitle, 0, 9, 2);
+
+
+        Label s=  createLabel(grid,cashTitle,0,0);
+        Label s2=  createLabel(grid,(""+cashAmount),0,1);
+        cashCount = createInput(grid, cashCount, cashCountTitle, 1);
+        Label c=  createLabel(grid,checkTitle,2,0);
+        Label c2=  createLabel(grid,(""+checkAmount),2,1);
+        checkCount = createInput(grid, checkCount, checkCountTitle, 3);
+
+//        Label s=  createLabel(grid,calculated,0,0);
+//        Label s2=  createLabel(grid,cashAmount,0,1);
+//        cashCount = createInput(grid, cashCount, counted, 1);
+//        Label c=  createLabel(grid,checkcalculated,2,0);
+//        Label c2=  createLabel(grid,checkAmount,2,1);
+//        checkCount = createInput(grid, checkCount, checkcounted, 3);
+
+        notes = createInputTextArea(grid, notes, notesTitle, 4);
+        createButton(grid, submit, submitTitle, 1, 5, 1);
+        createButton(grid, cancel, cancelTitle, 0, 5, 2);
+
         return grid;
     }
-
+    private Label createLabel(GridPane grid, String label, Integer pos, Integer pos2)
+    {
+        Label fieldLabel = new Label(label);
+        GridPane.setHalignment(fieldLabel, HPos.RIGHT);
+        grid.add(fieldLabel, pos2, pos);
+        return fieldLabel;
+    }
     private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
     {
         Label fieldLabel = new Label(label);
@@ -221,7 +214,7 @@ public class OpenSessionView extends View {
         Button clickedBtn = (Button) source;
         if (clickedBtn.getId().equals("1"))
         {
-            if (date.getText().isEmpty())
+            /*if (date.getText().isEmpty())
             {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitle);
@@ -267,46 +260,33 @@ public class OpenSessionView extends View {
             	String scoutData2 = (String)scout2.getValue();
             	String scoutData3 = (String)scout3.getValue();
                 Properties props = new Properties();
-                Properties props2 = new Properties();
                 props.setProperty("Date", date.getText());
-                date1 = date.getText();
-                startTime1 = startTime.getText();
                 props.setProperty("StartTime", startTime.getText());
-                props2.setProperty("StartTime", startTime.getText());
                 props.setProperty("EndTime", endTime.getText());
-                props2.setProperty("EndTime", endTime.getText());
                 props.setProperty("StartCash", startCash.getText());
                 props.setProperty("Notes", notes.getText());
-                props.setProperty("Scout1", scoutData1.substring(0, scoutData1.indexOf(",")));
+                props.setProperty("Scout1", scoutData1.substring(0, scoutData1.indexOf(" ")));
                 props.setProperty("Scout1Companion", scout1Companion.getText());
-                props2.setProperty("Scout1", scoutData1.substring(0, scoutData1.indexOf(",")));
-                props2.setProperty("Scout1Companion", scout1Companion.getText());
-                props.setProperty("Scout2", scoutData2.substring(0, scoutData2.indexOf(",")));
+                props.setProperty("Scout2", scoutData2.substring(0, scoutData2.indexOf(" ")));
                 props.setProperty("Scout2Companion", scout2Companion.getText());
-                props.setProperty("Scout3", scoutData3.substring(0, scoutData3.indexOf(",")));
+                props.setProperty("Scout3", scoutData3.substring(0, scoutData3.indexOf(" ")));
                 props.setProperty("Scout3Companion", scout3Companion.getText());
-                props2.setProperty("Scout2", scoutData2.substring(0, scoutData2.indexOf(",")));
-                props2.setProperty("Scout2Companion", scout2Companion.getText());
-                props2.setProperty("Scout3", scoutData3.substring(0, scoutData3.indexOf(",")));
-                props2.setProperty("Scout3Companion", scout3Companion.getText());
-                //props2.setProperty("SessionId",props.getProperty("SessionId"));
                 System.out.println(props);
-                System.out.println(props2);
                 try
                 {
                     myModel.stateChangeRequest("OpenSession", props);
-                    myModel.stateChangeRequest("OpenShift", props2);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(alertTitleSucceeded);
                     alert.setHeaderText(alertSubTitleSucceeded);
                     alert.setContentText(alertBodySucceeded);
                     alert.showAndWait();
+                    populateFields();
                 }
                 catch (Exception ex)
                 {
                     System.out.print("Error Opening Session");
                 }
-              }
+            }*/
         }
         else if (clickedBtn.getId().equals("2") == true)
         {
@@ -316,32 +296,32 @@ public class OpenSessionView extends View {
 
     private void refreshFormContents()
     {
-        submitTitle = buttons.getString("submitSession");
-        cancelTitle = buttons.getString("cancelSession");
-        description = labels.getString("notes");
-        sessionDate = labels.getString("date");
-        startingTime = labels.getString("startTime");
-        endingTime = labels.getString("endTime");
-        startingCash = labels.getString("startingCash");
-        companion = labels.getString("companion");
-        selectScout = labels.getString("selectScout");
-        title = titles.getString("mainTitleOpenSession");
-        alertTitle = alerts.getString("OpenSessionTitle");
-        alertSubTitle = alerts.getString("OpenSessionSubTitle");
-        alertBody = alerts.getString("OpenSessionBody");
-        alertTitleSucceeded = alerts.getString("OpenSessionTitleSucceeded");
-        alertSubTitleSucceeded = alerts.getString("OpenSessionSubTitleSucceeded");
-        alertBodySucceeded = alerts.getString("OpenSessionBodySucceeded");
+        submitTitle = buttons.getString("submitTree");
+        cancelTitle = buttons.getString("cancelTree");
+        notesTitle = labels.getString("notes");
+        title = titles.getString("mainTitleCloseSession");
+        cashCountTitle = labels.getString("cashCount");
+        checkCountTitle= labels.getString("checkCount");
+        cashTitle= labels.getString("cash");
+        checkTitle= labels.getString("check");
+        //NEED TO FIX ALERTS
+        alertTitle = alerts.getString("AddTreeTitle");
+        alertSubTitle = alerts.getString("AddTreeSubTitle");
+        alertBody = alerts.getString("AddTreeBody");
+        alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
+        alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
+        alertBodySucceeded = alerts.getString("AddTreeBodySucceeded");
+        calculated = labels.getString("Calculated");
+        counted = labels.getString("Counted");
+        checkcalculated = labels.getString("CheckCalculated");
+        checkcounted = labels.getString("CheckCounted");
     }
 
 
     protected void populateFields()
     {
-        date.setText(dateStamp);
-        startTime.setText(timeStamp);
-        endTime.setText("");
-        startCash.setText("");
-        notes.setText("");
+        cashCount.setText("");
+        checkCount.setText("");
     }
 
     @Override
