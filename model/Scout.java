@@ -14,9 +14,13 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Scene;
+import java.util.prefs.Preferences;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import userinterface.View;
 import userinterface.ViewFactory;
+import userinterface.UpdateScoutView2;
+import userinterface.RemoveScoutView2;
 
 
 public class Scout extends EntityBase implements IView, IModel {
@@ -24,17 +28,19 @@ public class Scout extends EntityBase implements IView, IModel {
      protected Stage myStage;
      protected TreeLotCoordinator myTreeLotCoordinator;
      protected Properties dependencies;
+     public Vector<String> ModifyScout;
+     public Vector<String> RemoveScout;
      private static final String myTableName = "SCOUT";
      private String updateStatusMessage = "";
      public String ErrorUpdate = "";
      public String FirstName;
+     public String ScoutId;
      public String MiddleInitial;
      public String LastName;
      public String DateOfBirth;
      public String PhoneNumber;
      public String Email;
      public String Status;
-     public Vector<String> ModifyScout;
 
 
 
@@ -53,20 +59,7 @@ public class Scout extends EntityBase implements IView, IModel {
                 createRemoveScoutView();
             }
         }
-
-        public void createUpdateScoutView() {
-               Scene currentScene = (Scene)myViews.get("UpdateScoutView");
-
-               if (currentScene == null)
-               {
-                   View newView = ViewFactory.createView("UpdateScoutView", this);
-                   currentScene = new Scene(newView);
-                   currentScene.getStylesheets().add("styleSheet.css");
-                   myViews.put("UpdateScoutView", currentScene);
-               }
-               swapToView(currentScene);
-           }
-
+        //--------------------------------------------------
         public void createAddScoutView() {
                Scene currentScene = (Scene)myViews.get("AddScoutView");
 
@@ -79,19 +72,33 @@ public class Scout extends EntityBase implements IView, IModel {
                }
                swapToView(currentScene);
            }
-           public void createRemoveScoutView() {
-                  Scene currentScene = (Scene)myViews.get("RemoveScoutView");
+          //--------------------------------------------
+          public void createRemoveScoutView() {
+                 Scene currentScene = (Scene)myViews.get("RemoveScoutView");
 
-                  if (currentScene == null)
-                  {
-                      View newView = ViewFactory.createView("RemoveScoutView", this);
-                      currentScene = new Scene(newView);
-                      currentScene.getStylesheets().add("styleSheet.css");
-                      myViews.put("RemoveScoutView", currentScene);
-                  }
-                  swapToView(currentScene);
-              }
-              public void createUpdateScoutView2() {
+                 if (currentScene == null)
+                 {
+                     View newView = ViewFactory.createView("RemoveScoutView", this);
+                     currentScene = new Scene(newView);
+                     currentScene.getStylesheets().add("styleSheet.css");
+                     myViews.put("RemoveScoutView", currentScene);
+                 }
+                 swapToView(currentScene);
+             }
+             //--------------------------------
+        public void createUpdateScoutView() {
+               Scene currentScene = (Scene)myViews.get("UpdateScoutView");
+
+               if (currentScene == null)
+               {
+                   View newView = ViewFactory.createView("UpdateScoutView", this);
+                   currentScene = new Scene(newView);
+                   currentScene.getStylesheets().add("styleSheet.css");
+                   myViews.put("UpdateScoutView", currentScene);
+               }
+               swapToView(currentScene);
+           }
+            public void createUpdateScoutView2() {
                      Scene currentScene = (Scene)myViews.get("UpdateScoutView2");
 
                      if (currentScene == null)
@@ -103,7 +110,7 @@ public class Scout extends EntityBase implements IView, IModel {
                      }
                      swapToView(currentScene);
                  }
-            /*  public void createRemoveScoutView2() {
+              public void createRemoveScoutView2() {
                      Scene currentScene = (Scene)myViews.get("RemoveScoutView2");
 
                      if (currentScene == null)
@@ -114,7 +121,7 @@ public class Scout extends EntityBase implements IView, IModel {
                          myViews.put("RemoveScoutView2", currentScene);
                      }
                      swapToView(currentScene);
-                 }*/
+                 }
      public void setDependencies()
 	{
             dependencies = new Properties();
@@ -129,15 +136,74 @@ public class Scout extends EntityBase implements IView, IModel {
             return null;
 	}
   public Vector<String> getResultFromDB(String key)
-{
+  {
          if (key.equals("ModifyScout")) {
              return ModifyScout;
          }
+         if (key.equals("RemoveScout")) {
+             return RemoveScout;
+         }
          return null;
-}
-public void setNotes(String Notes) {
+       }
+       public void setFirst(String First) {
 
-}
+       }
+       public void FindScoutInDatabase(String first,String last)
+       {
+         first = persistentState.getProperty("FirstName");
+         last =  persistentState.getProperty("LastName");
+         String query = "SELECT * FROM " + myTableName + " WHERE ((FirstName LIKE '" + first +	"') AND (LastName LIKE '" + last + "'));";
+         System.out.println(query);
+         Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
+         System.out.println("Vector:" +allDataRetrieved);
+         try
+         {
+            if (allDataRetrieved != null)
+            {
+               for (Properties p : allDataRetrieved)
+               {
+                   ModifyScout b = new ModifyScout(p);
+                   ModifyScout = b.getVector();
+                   System.out.println("ModifyScout:" + ModifyScout);
+               }
+           }
+           else
+           {
+               throw new InvalidPrimaryKeyException("No matching scout for : "
+              + first + ".");
+            }
+          } catch (InvalidPrimaryKeyException e) {
+              System.err.println("Error: " + e);
+            }
+          }
+          public void FindRemoveScoutInDatabase(String first,String last)
+          {
+              first = persistentState.getProperty("FirstName");
+              last =  persistentState.getProperty("LastName");
+              String query = "SELECT * FROM " + myTableName + " WHERE ((FirstName LIKE '" + first +	"') AND (LastName LIKE '" + last + "'));";
+              System.out.println(query);
+              Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
+              System.out.println("Vector:" +allDataRetrieved);
+              try
+              {
+                  if (allDataRetrieved != null)
+                  {
+                      for (Properties p : allDataRetrieved)
+                      {
+                          RemoveScout b = new RemoveScout(p);
+                          RemoveScout = b.getVector();
+                          System.out.println("RemoveScout:" + RemoveScout);
+                        }
+                  }
+                  else
+                  {
+                    throw new InvalidPrimaryKeyException("No matching scout for : "
+                    + first + ".");
+                  }
+                } catch (InvalidPrimaryKeyException e) {
+                  System.err.println("Error: " + e);
+                }
+            }
      public void stateChangeRequest(String key, Object value)
 	{
             if (key.equals("Done") == true)
@@ -160,6 +226,9 @@ public void setNotes(String Notes) {
                    persistentState = (Properties) value;
                    //System.out.print("ModifyTree:" + persistentState.getProperty("Barcode"));
                    FindScoutInDatabase(persistentState.getProperty("FirstName"),persistentState.getProperty("LastName"));
+                   ScoutId = persistentState.getProperty("ScoutId");
+                   FirstName = persistentState.getProperty("FirstName");
+                   LastName = persistentState.getProperty("LastName");
                 }
             }
             else if (key.equals("ModifyScout2") == true)
@@ -167,14 +236,21 @@ public void setNotes(String Notes) {
                 if (value != null)
                 {
                    persistentState = (Properties) value;
-
+                   ScoutId = persistentState.getProperty("ScoutId");
                    FirstName= persistentState.getProperty("FirstName");
                    MiddleInitial= persistentState.getProperty("MiddleInitial");
                    LastName= persistentState.getProperty("LastName");
                    DateOfBirth= persistentState.getProperty("DateOfBirth");
                    PhoneNumber= persistentState.getProperty("PhoneNumber");
                    Email= persistentState.getProperty("Email");
-                  Status= persistentState.getProperty("Status");
+                   Status= persistentState.getProperty("Status");
+                   Preferences prefs = Preferences.userNodeForPackage(UpdateScoutView2.class);
+                   prefs.put("scoutId", "");
+                   prefs.put("scoutId", ScoutId.toString());
+                   prefs.put("firstName", "");
+                   prefs.put("firstName", FirstName.toString());
+                   prefs.put("lastName", "");
+                   prefs.put("lastName", LastName.toString());
 
 
                    createUpdateScoutView2();
@@ -201,11 +277,47 @@ public void setNotes(String Notes) {
             {
                 if (value != null)
                 {
-                    persistentState = (Properties) value;
-                    RemoveScoutInDatabase();
+                   persistentState = (Properties) value;
+                   //System.out.print("ModifyTree:" + persistentState.getProperty("Barcode"));
+                   FindRemoveScoutInDatabase(persistentState.getProperty("FirstName"),persistentState.getProperty("LastName"));
                 }
             }
+            else if (key.equals("RemoveScout2") == true)
+            {
+                if (value != null)
+                {
+                   persistentState = (Properties) value;
 
+                   ScoutId = persistentState.getProperty("ScoutId");
+                   FirstName= persistentState.getProperty("FirstName");
+                  // MiddleInitial= persistentState.getProperty("MiddleInitial");
+                   LastName= persistentState.getProperty("LastName");
+                   Status = "Inactive";
+                  // DateOfBirth= persistentState.getProperty("DateOfBirth");
+                  // PhoneNumber= persistentState.getProperty("PhoneNumber");
+                  // Email= persistentState.getProperty("Email");
+                  // Status= persistentState.getProperty("Status");
+                  Preferences prefs = Preferences.userNodeForPackage(RemoveScoutView2.class);
+                  prefs.put("scoutId", "");
+                  prefs.put("scoutId", ScoutId.toString());
+                  prefs.put("firstName", "");
+                  prefs.put("firstName", FirstName.toString());
+                  prefs.put("lastName", "");
+                  prefs.put("lastName", LastName.toString());
+
+
+                   createRemoveScoutView2();
+                }
+            }
+            else if (key.equals("RemoveScout3") == true)
+            {
+                if (value != null)
+                {
+                   persistentState = (Properties) value;
+                   RemoveScoutInDatabase();
+                   myTreeLotCoordinator.createAndShowTreeLotCoordinatorView();
+                }
+            }
 
 	}
   public String getFirstName(){
@@ -274,34 +386,6 @@ public void setNotes(String Notes) {
 
         		return v;
         }*/
-        public void FindScoutInDatabase(String first,String last)
-     {
-        first = persistentState.getProperty("FirstName");
-        last =  persistentState.getProperty("LastName");
-          String query = "SELECT * FROM " + myTableName + " WHERE ((FirstName LIKE '" + first +	"') AND (LastName LIKE '" + last + "'));";
-          System.out.println(query);
-         Vector<Properties> allDataRetrieved = getSelectQueryResult(query);
-         System.out.println("Vector:" +allDataRetrieved);
-         try
-               {
-       if (allDataRetrieved != null)
-       {
-                       for (Properties p : allDataRetrieved)
-                     {
-                           ModifyScout b = new ModifyScout(p);
-                           ModifyScout = b.getVector();
-                           System.out.println("ModifyScout:" + ModifyScout);
-           }
-                   }
-       else
-       {
-                       throw new InvalidPrimaryKeyException("No matching scout for : "
-                      + first + ".");
-       }
-         } catch (InvalidPrimaryKeyException e) {
-       System.err.println("Error: " + e);
-         }
-     }
 
 
         public void insert() {

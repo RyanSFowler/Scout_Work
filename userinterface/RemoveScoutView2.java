@@ -40,49 +40,50 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import model.Tree;
-import model.TreeVector;
-import model.ModifyTree;
+import model.Scout;
+import model.ScoutVector;
+import model.RemoveScout;
+
 
 /**
  *
  * @author florianjousselin
  */
-public class UpdateTreeView2 extends View {
+public class RemoveScoutView2 extends View {
 
-    private TextField barcode;
-    private TextArea notes;
-    protected Button cancel;
-    protected Button submit;
-    private Button searchButton;
-    private Button doneButton;
+  protected Button cancel;
+  protected Button submit;
 
-    private Locale locale = new Locale("en", "CA");
-    private ResourceBundle buttons;
-    private ResourceBundle titles;
-    private ResourceBundle labels;
-    private ResourceBundle alerts;
-    private String cancelTitle;
-    private String submitTitle;
-    private String barcodeTitle;
-    private String title;
-    private String alertTitle;
-    private String alertSubTitle;
-    private String alertBody;
-    private String description;
+  private Locale locale = new Locale("en", "CA");
+  private ResourceBundle buttons;
+  private ResourceBundle titles;
+  private ResourceBundle labels;
+  private ResourceBundle alerts;
+  private String cancelTitle;
+  private String submitTitle;
+  private String firstNameTitle;
+  private String lastNameTitle;
+  private String middleTitle;
+  private String dobTitle;
+  private String phoneTitle;
+  private String emailTitle;
+  private String statusTitle= "Status";//change
+  private String mI;
 
-    private TableView<TreeVector> tableOfTree;
+  private String title;
+  private String alertTitle;
+  private String alertSubTitle;
+  private String alertBody;
+
+  private TableView<ScoutVector> tableOfScouts;
 
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
-    private TableColumn barcodeColumn;
-    private TableColumn NotesColumn;
-    private Preferences prefs;
 
-    public UpdateTreeView2(IModel model) {
-        super(model, "UpdateTreeView");
-        prefs = Preferences.userNodeForPackage(AddNewTreeView.class);
+    public RemoveScoutView2(IModel model) {
+        super(model, "RemoveScoutView2");
+        Preferences prefs = Preferences.userNodeForPackage(RemoveScoutView2.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -111,7 +112,15 @@ public class UpdateTreeView2 extends View {
 	container.getChildren().add(createFormContent());
 	getChildren().add(container);
     }
-
+    private TextField createInput(GridPane grid, TextField textfield, String label, Integer pos)
+    {
+        Label Author = new Label(label);
+        GridPane.setHalignment(Author, HPos.RIGHT);
+        grid.add(Author, 0, pos);
+        textfield = new TextField();
+        grid.add(textfield, 1, pos);
+        return textfield;
+    }
     public Node createTitle()
     {
         HBox container = new HBox();
@@ -129,15 +138,31 @@ public class UpdateTreeView2 extends View {
     {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-	       grid.setHgap(10);
+	      grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-	createInput2(grid, 0);
+/*  firstNameField = createInput(grid, firstNameField, firstNameTitle, 0);
+  middleInitialField = createInput(grid, middleInitialField, middleTitle, 1);
+  lastNameField = createInput(grid, lastNameField, lastNameTitle, 2);
+  dobField = createInput(grid, dobField, dobTitle, 3);
+  phoneNumField = createInput(grid, phoneNumField, phoneTitle, 4);
+  emailField = createInput(grid, emailField, emailTitle, 5);
+  statusField = createInput(grid, statusField, statusTitle, 6);*/
+  Label Author = new Label("Remove Scout?");
+  GridPane.setHalignment(Author, HPos.RIGHT);
+  grid.add(Author, 0, 1);
+  /*Scout s= new Scout();
+  String f = s.getFirstName();
+  String l = s.getLastName();
+  String i = s.getScoutId();
+  Label a = new Label((""+i+". "+f+ " "+ l+" "));
+  GridPane.setHalignment(a, HPos.RIGHT);
+  grid.add(a, 0, 2);*/
 
 
-	createButton(grid, submit, submitTitle, 1, 4, 1);
-	createButton(grid, cancel, cancelTitle, 0, 4, 2);
+	createButton(grid, submit, submitTitle, 1, 7, 1);
+	createButton(grid, cancel, cancelTitle, 0, 7, 2);
 
 
 
@@ -146,19 +171,7 @@ public class UpdateTreeView2 extends View {
     }
 
 
-    private void createInput2(GridPane grid, Integer pos)
-    {
-	HBox hb = new HBox(10);
-	hb.setAlignment(Pos.CENTER);
-	hb.getChildren().add(new Label("Notes:"));
-	notes = new TextArea();
 
-        String notesText = prefs.get("notes", null);
-        notes.setText(notesText);
-
-	hb.getChildren().add(notes);
-	grid.add(hb, 1, pos);
-    }
 
 
     private void createButton(GridPane grid, Button button, String nameButton, Integer pos1, Integer pos2, Integer id)
@@ -183,33 +196,30 @@ public class UpdateTreeView2 extends View {
         Button clickedBtn = (Button) source;
         if (clickedBtn.getId().equals("1") == true)
         {
-            if (notes.getText().isEmpty() == true)
-            {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(alertTitle);
-                alert.setHeaderText(alertSubTitle);
-                alert.setContentText(alertBody);
-                alert.showAndWait();
-            }
-            else
-            {
+
+
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(alertTitleSucceeded);
                 alert.setHeaderText(alertSubTitleSucceeded);
                 alert.setContentText(alertBodySucceeded);
                 alert.showAndWait();
                 Properties props = new Properties();
-                props.setProperty("Notes", notes.getText());
+                /*props.setProperty("FirstName", firstNameField.getText());
+                props.setProperty("MiddleInitial", middleInitialField.getText());
+                props.setProperty("LastName", lastNameField.getText());
+                props.setProperty("DateOfBirth", dobField.getText());
+                props.setProperty("PhoneNumber", phoneNumField.getText());
+                props.setProperty("Email", emailField.getText());*/
+                props.setProperty("Status", "Inactive");
                 try
                 {
-                    myModel.stateChangeRequest("ModifyTree3", props);
+                    myModel.stateChangeRequest("RemoveScout3", props);
                 }
                 catch (Exception ex)
                 {
                     System.out.print("An Error occured: " + ex);
                 }
             }
-        }
         else if (clickedBtn.getId().equals("2") == true)
         {
             myModel.stateChangeRequest("Done", null);
@@ -220,9 +230,8 @@ public class UpdateTreeView2 extends View {
     {
         submitTitle = buttons.getString("submitModifyTree");
         cancelTitle = buttons.getString("cancelTree");
-        barcodeTitle = labels.getString("barcodeTree");
-        description = labels.getString("notes");
-        title = titles.getString("mainTitleModifyTree");
+
+        title = titles.getString("mainTitleModifyScout");
         alertTitle = alerts.getString("AddTreeTitle");
         alertSubTitle = alerts.getString("AddTreeSubTitle");
         alertBody = alerts.getString("AddTreeBody");

@@ -311,7 +311,7 @@ public class TransactionView extends View {
         alertTitleSucceeded = alerts.getString("AddTransactionTitleSuccess");
         alertSubTitleSucceeded = alerts.getString("AddTransactionSubTitleSucceeded");
         alertBodySucceeded = alerts.getString("AddTransactionBodySucceeded");
-        
+
         selectPayment = buttons.getString("SelectPayment");
         selectType = buttons.getString("SelectType");
     }

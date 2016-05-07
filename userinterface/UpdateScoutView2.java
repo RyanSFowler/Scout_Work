@@ -16,6 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.scene.control.ComboBox;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -57,7 +58,6 @@ public class UpdateScoutView2 extends View {
   private TextField dobField;
   private TextField phoneNumField;
   private TextField emailField;
-  private TextField statusField;
   protected Button cancel;
   protected Button submit;
 
@@ -74,25 +74,38 @@ public class UpdateScoutView2 extends View {
   private String dobTitle;
   private String phoneTitle;
   private String emailTitle;
-  private String statusTitle= "Status";//change
+  private String statusTitle;//change
   private String mI;
 
   private String title;
   private String alertTitle;
   private String alertSubTitle;
   private String alertBody;
+  private TableColumn barcodeColumn;
+
+  private TableColumn firstNameTable;
+  private TableColumn lastNameTable;
+  private TableColumn middleTable;
+  private TableColumn dobTable;
+  private TableColumn phoneTable;
+  private TableColumn emailTable;
+  private TableColumn statusTable;
+  private TableColumn scoutIdTable;
+  private ComboBox statusField;
+  private String selectStatus;
+
 
   private TableView<ScoutVector> tableOfScouts;
 
     private String alertTitleSucceeded;
     private String alertSubTitleSucceeded;
     private String alertBodySucceeded;
-    private TableColumn barcodeColumn;
-    private TableColumn NotesColumn;
+    private Preferences prefs;
+
 
     public UpdateScoutView2(IModel model) {
         super(model, "UpdateScoutView");
-        Preferences prefs = Preferences.userNodeForPackage(UpdateScoutView.class);
+        prefs = Preferences.userNodeForPackage(AddScoutView.class);
         String langage = prefs.get("langage", null);
         if (langage.toString().equals("en") == true)
         {
@@ -143,6 +156,101 @@ public class UpdateScoutView2 extends View {
         return container;
     }
 
+    private void createInput2(GridPane grid, Integer pos)
+    {
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.BASELINE_LEFT);
+        hb.getChildren().add(new Label(firstNameTitle));
+        firstNameField = new TextField();
+
+        String firstText = prefs.get("firstName", null);
+        firstNameField.setText(firstText);
+
+        hb.getChildren().add(firstNameField);
+        grid.add(hb, 1, pos);
+    }
+    private void createInput3(GridPane grid, Integer pos)
+    {
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.BASELINE_LEFT);
+        hb.getChildren().add(new Label(middleTitle));
+        middleInitialField = new TextField();
+
+        String middleText = prefs.get("middleInitial", null);
+        middleInitialField.setText(middleText);
+
+        hb.getChildren().add(middleInitialField);
+        grid.add(hb, 1, pos);
+    }
+    private void createInput4(GridPane grid, Integer pos)
+    {
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.BASELINE_LEFT);
+        hb.getChildren().add(new Label(lastNameTitle));
+        lastNameField = new TextField();
+
+        String lastNameText = prefs.get("lastName", null);
+        lastNameField.setText(lastNameText);
+
+        hb.getChildren().add(lastNameField);
+        grid.add(hb, 1, pos);
+    }
+    private void createInput5(GridPane grid, Integer pos)
+    {
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.BASELINE_LEFT);
+        hb.getChildren().add(new Label(dobTitle));
+        dobField = new TextField();
+
+        String dobText = prefs.get("dateOfBirth", null);
+        dobField.setText(dobText);
+
+        hb.getChildren().add(dobField);
+        grid.add(hb, 1, pos);
+    }
+    private void createInput6(GridPane grid, Integer pos)
+    {
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.BASELINE_LEFT);
+        hb.getChildren().add(new Label(phoneTitle));
+        phoneNumField = new TextField();
+
+        String phoneText = prefs.get("phoneNumber", null);
+        dobField.setText(phoneText);
+
+        hb.getChildren().add(phoneNumField);
+        grid.add(hb, 1, pos);
+    }
+    private void createInput7(GridPane grid, Integer pos)
+    {
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.BASELINE_LEFT);
+        hb.getChildren().add(new Label(emailTitle));
+        emailField = new TextField();
+
+        String emailText = prefs.get("email", null);
+        dobField.setText(emailText);
+
+        hb.getChildren().add(emailField);
+        grid.add(hb, 1, pos);
+    }
+    private void createInput8(GridPane grid, Integer pos)
+    {
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.BASELINE_LEFT);
+        hb.getChildren().add(new Label(statusTitle));
+        statusField = new ComboBox();
+
+        statusField.getItems().addAll(
+          "Active",
+          "Inactive"//Change
+        );
+        statusField.setPromptText(selectStatus);
+        hb.getChildren().add(statusField);
+
+        grid.add(hb,1,pos);
+
+    }
     private GridPane createFormContent()
     {
         GridPane grid = new GridPane();
@@ -151,13 +259,18 @@ public class UpdateScoutView2 extends View {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-  firstNameField = createInput(grid, firstNameField, firstNameTitle, 0);
-  middleInitialField = createInput(grid, middleInitialField, middleTitle, 1);
-  lastNameField = createInput(grid, lastNameField, lastNameTitle, 2);
-  dobField = createInput(grid, dobField, dobTitle, 3);
-  phoneNumField = createInput(grid, phoneNumField, phoneTitle, 4);
-  emailField = createInput(grid, emailField, emailTitle, 5);
-  statusField = createInput(grid, statusField, statusTitle, 6);
+  createInput2(grid,0);
+  createInput3(grid,1);
+  createInput4(grid,2);
+  createInput5(grid,3);
+  createInput6(grid,4);
+  createInput7(grid,5);
+  createInput8(grid,6);
+//  lastNameField = createInput(grid, lastNameField, lastNameTitle, 2);
+  //dobField = createInput(grid, dobField, dobTitle, 3);
+//  phoneNumField = createInput(grid, phoneNumField, phoneTitle, 4);
+  //emailField = createInput(grid, emailField, emailTitle, 5);
+//  statusField = createInput(grid, statusField, statusTitle, 6);
 
 
 	createButton(grid, submit, submitTitle, 1, 7, 1);
@@ -226,7 +339,7 @@ public class UpdateScoutView2 extends View {
                 props.setProperty("DateOfBirth", dobField.getText());
                 props.setProperty("PhoneNumber", phoneNumField.getText());
                 props.setProperty("Email", emailField.getText());
-                props.setProperty("Status", statusField.getText());
+                props.setProperty("Status", statusField.getValue().toString());
                 try
                 {
                     myModel.stateChangeRequest("ModifyScout3", props);
@@ -261,6 +374,7 @@ public class UpdateScoutView2 extends View {
         alertTitleSucceeded = alerts.getString("AddTreeTitleSucceeded");
         alertSubTitleSucceeded = alerts.getString("AddTreeSubTitleSucceeded");
         alertBodySucceeded = alerts.getString("UpdateTreeBodySucceeded");
+        selectStatus = buttons.getString("SelectStatus");
     }
 
 

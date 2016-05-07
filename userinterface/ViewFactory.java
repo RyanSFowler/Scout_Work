@@ -27,6 +27,10 @@ public class ViewFactory {
 		{
 			return new RemoveScoutView(model);
 		}
+                else if(viewName.equals("RemoveScoutView2") == true)
+		{
+			return new RemoveScoutView2(model);
+		}
 		else if(viewName.equals("AddNewTreeView") == true)
 		{
 			return new AddNewTreeView(model);

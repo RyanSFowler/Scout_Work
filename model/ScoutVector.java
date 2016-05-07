@@ -14,81 +14,78 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class ScoutVector {
 private final SimpleStringProperty scoutId;
-private final SimpleStringProperty firstname;
+private final SimpleStringProperty firstName;
 private final SimpleStringProperty middleInitial;
 private final SimpleStringProperty lastName;
 private final SimpleStringProperty dateOfBirth;
-private final SimpleStringProperty phoneNumber;
 private final SimpleStringProperty email;
+private final SimpleStringProperty phoneNumber;
 private final SimpleStringProperty status;
-private final SimpleStringProperty dateStatusUpdated;
 
  public ScoutVector(Vector<String> book)
     {
-      System.out.println("Book"+book);
-  scoutId =  new SimpleStringProperty(book.elementAt(0));
-	firstname =  new SimpleStringProperty(book.elementAt(1));
-	middleInitial =  new SimpleStringProperty(book.elementAt(2));
-  lastName=  new SimpleStringProperty(book.elementAt(3));
-  dateOfBirth =  new SimpleStringProperty(book.elementAt(4));
-  phoneNumber =  new SimpleStringProperty(book.elementAt(5));
-  email =  new SimpleStringProperty(book.elementAt(6));
-  status =  new SimpleStringProperty(book.elementAt(7));
-  dateStatusUpdated =  new SimpleStringProperty(book.elementAt(8));
-    }
-/*
-    public void setBarcode(String Barcode) {
-        barcode.set(Barcode);
+       scoutId =  new SimpleStringProperty(book.elementAt(0));
+	     firstName =  new SimpleStringProperty(book.elementAt(1));
+       middleInitial =  new SimpleStringProperty(book.elementAt(2));
+       lastName =  new SimpleStringProperty(book.elementAt(3));
+       dateOfBirth =  new SimpleStringProperty(book.elementAt(4));
+       email =  new SimpleStringProperty(book.elementAt(5));
+       phoneNumber =  new SimpleStringProperty(book.elementAt(6));
+       status =  new SimpleStringProperty(book.elementAt(7));
     }
 
-    public void setNotes(String Notes) {
-        notes.set(Notes);
+    public void setMiddleInitial(String MiddleInitial) {
+        middleInitial.set(MiddleInitial);
     }
-/*
-    public String getFirstName(){
-      return firstName.get();
-    }
-    public String getMiddleInitial(){
-      return middleInitial.get();
-    }
-    public String getLastName(){
-      return lastName.get();
-    }
-    public String getDateOfBirth(){
-      return dateOfBirth.get();
-    }
-    public String getPhoneNumber(){
-      return phoneNumber.get();
-    }
-    public String getEmail(){
-      return email.get();
-    }
-    public String getStatus(){
-      return status.get();
+    public void setScoutId(String ScoutId) {
+        scoutId.set(ScoutId);
     }
 
+    public void setFirstName(String FirstName) {
+        firstName.set(FirstName);
+    }
+    public void setLastName(String LastName) {
+        lastName.set(LastName);
+    }
+    public void setDateOfBirth(String DateOfBirth) {
+        dateOfBirth.set(DateOfBirth);
+    }
 
+    public void setEmail(String Email) {
+        email.set(Email);
+    }
+    public void setPhonenumber(String PhoneNumber) {
+        phoneNumber.set(PhoneNumber);
+    }
+    public void setStatus(String Status) {
+        status.set(Status);
+    }
 
-    public void setFirstName(String FirstName){
-       firstName.set(FirstName);
+    public String getMiddleInitial() {
+        return middleInitial.get();
     }
-    public void setMiddleInitial(String MiddleInitial){
-       middleInitial.set(MiddleInitial);
+
+    public String getFirstName() {
+        return firstName.get();
     }
-    public void setLastName(String LastName){
-       lastName.set(LastName);
+    public String getLastName() {
+        return lastName.get();
     }
-    public void setDateOfBirth(String DateOfBirth){
-       dateOfBirth.set(DateOfBirth);
+
+    public String getDateOfBirth() {
+        return dateOfBirth.get();
     }
-    public void setPhoneNumber(String PhoneNumber){
-       phoneNumber.set(PhoneNumber);
+
+    public String getEmail() {
+        return email.get();
     }
-    public void setEmail(String Email){
-       email.set(Email);
+    public String getStatus() {
+        return status.get();
     }
-    public void setStatus(String Status){
-       status.set(Status);
+    public String getPhoneNumber() {
+        return phoneNumber.get();
     }
-    */
+    public String getScoutId() {
+        return scoutId.get();
+    }
 }

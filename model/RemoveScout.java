@@ -15,13 +15,13 @@ import java.util.Vector;
  *
  * @author berghen
  */
-public class ModifyScout extends EntityBase implements IView, IModel{
+public class RemoveScout extends EntityBase implements IView, IModel{
 
     protected Properties dependencies;
     private static final String myTableName = "SCOUT";
 
 
-    public  ModifyScout(Properties props)
+    public  RemoveScout(Properties props)
 	{
             super(myTableName);
             setDependencies();
@@ -33,13 +33,7 @@ public class ModifyScout extends EntityBase implements IView, IModel{
 		Vector<String> v = new Vector<String>();
     v.addElement(persistentState.getProperty("ScoutId"));
 		v.addElement(persistentState.getProperty("FirstName"));
-    v.addElement(persistentState.getProperty("MiddleInitial"));
 		v.addElement(persistentState.getProperty("LastName"));
-    v.addElement(persistentState.getProperty("DateOfBirth"));
-    v.addElement(persistentState.getProperty("Email"));
-		v.addElement(persistentState.getProperty("PhoneNumber"));
-    v.addElement(persistentState.getProperty("Status"));
-
 
 		return v;
 	}

@@ -140,17 +140,12 @@ getChildren().add(container);
 
         tableOfScouts = new TableView<ScoutVector>();
 
-        TableColumn scoutIDColumn = new TableColumn("scoutId") ;
-        scoutIDColumn.setMinWidth(100);
-        scoutIDColumn.setCellValueFactory(
-                  new PropertyValueFactory<ScoutTableModel, String>("ScoutId"));
-
         TableColumn firstNameColumn = new TableColumn("firstName") ;
         firstNameColumn.setMinWidth(100);
         firstNameColumn.setCellValueFactory(
             new PropertyValueFactory<ScoutTableModel, String>("FirstName"));
 
-        TableColumn middleInitialColumn = new TableColumn("middleInitial") ;
+      TableColumn middleInitialColumn = new TableColumn("middleInitial") ;
         middleInitialColumn.setMinWidth(100);
         middleInitialColumn.setCellValueFactory(
             new PropertyValueFactory<ScoutTableModel, String>("MiddleInitial"));
@@ -180,14 +175,8 @@ getChildren().add(container);
         statusColumn.setCellValueFactory(
                   new PropertyValueFactory<ScoutTableModel, String>("Status"));
 
-        TableColumn dateStatusUpdatedColumn = new TableColumn("dateStatusUpdated") ;
-        dateStatusUpdatedColumn.setMinWidth(100);
-        dateStatusUpdatedColumn.setCellValueFactory(
-                  new PropertyValueFactory<ScoutTableModel, String>("DateStatusUpdated"));
 
-        tableOfScouts.getColumns().addAll(scoutIDColumn,
-                  firstNameColumn,  middleInitialColumn,lastNameColumn, dateOfBirthColumn, phoneNumberColumn, emailColumn, statusColumn, dateStatusUpdatedColumn);
-
+        tableOfScouts.getColumns().addAll(firstNameColumn,  middleInitialColumn,lastNameColumn, dateOfBirthColumn, phoneNumberColumn, emailColumn, statusColumn);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setPrefSize(500, 150);
         scrollPane.setContent(tableOfScouts);
@@ -317,12 +306,12 @@ getChildren().add(container);
                         props.setProperty("ScoutId", view.get(0));
                         props.setProperty("FirstName", view.get(1));
                         props.setProperty("MiddleInitial", view.get(2));
-                        props.setProperty("LastName", view.get(3));
+                        props.setProperty("LastName", view.get(2));
                         props.setProperty("DateOfBirth", view.get(4));
                         props.setProperty("PhoneNumber", view.get(5));
                         props.setProperty("Email", view.get(6));
                         props.setProperty("Status", view.get(7));
-                        props.setProperty("DateStatusUpdated", view.get(8));
+                      //  props.setProperty("DateStatusUpdated", view.get(8));
                         myModel.stateChangeRequest("ModifyScout2", props);
                     }
                 });
